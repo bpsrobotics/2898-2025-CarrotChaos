@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.POVButton
 import frc.beaverlib.async.Promise
+import frc.robot.commands.OI.Rumble
 
 import kotlin.math.pow
 import kotlin.math.sign
@@ -28,6 +29,10 @@ import kotlin.math.sign
  */
 @Suppress("unused")
 object OI : SubsystemBase() {
+    init {
+        defaultCommand = Rumble(GenericHID.RumbleType.kBothRumble, 0.0)
+    }
+
     /**
      * Threshold below which [process] will return 0.
      * 0.1 historically used, but optimal value unknown.
@@ -67,7 +72,7 @@ object OI : SubsystemBase() {
     fun Double.process(deadzone: Boolean = false, square: Boolean = false, cube: Boolean = false) =
         process(this, deadzone, square, cube)
 
-    private val driverController = CommandXboxController(0)
+    val driverController = CommandXboxController(0)
     private val operatorController = CommandJoystick(1)
 
     // Right joystick y-axis.  Controller mapping can be tricky, the best way is to use the driver station to see what buttons and axis are being pressed.
@@ -128,42 +133,5 @@ object OI : SubsystemBase() {
             DOWNLEFT -> Vector2(-1.0, -1.0)
             DOWNRIGHT -> Vector2(1.0, -1.0)
         }
-    }
-
-
-    //    val operatorTrigger: BooleanEvent = operatorController.button(1, loop)
-    //val operatorTrigger get() = operatorController.getRawButton(1)
-    //    val operatorTriggerReleased: BooleanEvent = operatorTrigger.falling()
-    object Rumble {
-        private var isRumbling  = false
-        private var rumbleTime  = 0.0
-        private val rumblePower = 0.0
-        private val rumbleSide = GenericHID.RumbleType.kRightRumble
-        private val rumbleTimer = Timer()
-        private val waiting = mutableSetOf<Promise<Unit>>()
-        fun set(time: Double, power: Double, side: GenericHID.RumbleType = GenericHID.RumbleType.kBothRumble){
-            rumbleTimer.reset()
-            rumbleTime = time
-            driverController.setRumble(side, power)
-            rumbleTimer.start()
-        }
-        fun until(promise: Promise<Unit>, power: Double = 1.0, side: GenericHID.RumbleType = GenericHID.RumbleType.kBothRumble) {
-            driverController.setRumble(side, power)
-            waiting.add(promise)
-            promise.then { update(); Promise.resolve(Unit) }
-        }
-        fun update(){
-            if(rumbleTimer.hasElapsed(rumbleTime) && !(try {
-                    waiting.map { it.hasFulfilled }.reduce { acc, b -> acc or b }} catch (_:Throwable) {false})) {
-                driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.0)
-            }
-            waiting.forEach {
-                if (it.hasFulfilled) waiting.remove(it)
-            }
-        }
-    }
-
-    override fun periodic(){
-        Rumble.update()
     }
 }
