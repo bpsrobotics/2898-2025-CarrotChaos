@@ -5,6 +5,8 @@
 
 package frc.robot
 
+import beaverlib.utils.Units.Angular.radians
+import beaverlib.utils.Units.Angular.radiansPerSecond
 import beaverlib.utils.Units.Linear.feet
 import beaverlib.utils.Units.Linear.feetPerSecond
 import beaverlib.utils.Units.Linear.inches
@@ -41,6 +43,7 @@ import kotlin.math.PI
 class Constants {
     object DriveConstants {
         val MaxSpeedMetersPerSecond = (3.1).feetPerSecond.asMetersPerSecond
+        val MaxAngularSpeedRadiansPerSecond = (Math.PI).radiansPerSecond.asRadiansPerSecond
         // Chassis configuration (left to right dist of center of the wheels)
         val TrackWidth = Units.inchesToMeters(11.5)
 

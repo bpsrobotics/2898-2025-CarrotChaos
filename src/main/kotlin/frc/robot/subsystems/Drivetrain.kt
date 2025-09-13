@@ -54,6 +54,8 @@ object Drivetrain : SubsystemBase() {
 
     /** The maximum speed of the swerve drive */
     var maximumSpeed = Constants.DriveConstants.MaxSpeedMetersPerSecond
+    var maxAngularSpeed = Constants.DriveConstants.MaxAngularSpeedRadiansPerSecond
+
 
     /** SwerveModuleStates publisher for swerve display */
     var swerveStates: StructArrayPublisher<SwerveModuleState> = NetworkTableInstance.getDefault().
@@ -86,7 +88,7 @@ object Drivetrain : SubsystemBase() {
 //        }
 //        setupPathPlanner()
 //
-        swerveDrive.setVisionMeasurementStdDevs(Vision.getStandardDev(3.0))
+//        swerveDrive.setVisionMeasurementStdDevs(Vision.getStandardDev(3.0))
         // Updates odometry whenever a new
 //        Vision.listeners.add ( "UpdateOdometry") { input, source ->
 //            if (source == "cam1") {
