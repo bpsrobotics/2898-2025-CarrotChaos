@@ -81,35 +81,15 @@ object Drivetrain : SubsystemBase() {
         }
         swerveDrive.setHeadingCorrection(false) // Heading correction should only be used while controlling the robot via angle.
         swerveDrive.setCosineCompensator(false) //!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
-//        if (visionDriveTest) {
-////                setupPhotonVision()
-//            // Stop the odometry thread if we are using vision that way we can synchronize updates better.
-//            swerveDrive.stopOdometryThread()
-//        }
-//        setupPathPlanner()
-//
-//        swerveDrive.setVisionMeasurementStdDevs(Vision.getStandardDev(3.0))
-        // Updates odometry whenever a new
-//        Vision.listeners.add ( "UpdateOdometry") { input, source ->
-//            if (source == "cam1") {
-//                if (input.multitagResult.isPresent) {
-//                    val position: Pose2d = Vision.getRobotPosition(input)?.toPose2d() ?: return@add
-//                    swerveDrive.addVisionMeasurement(
-//                        Pose2d(position.x, position.y, position.rotation),
-//                        input.timestampSeconds
-//                    )
-//                }
-//            }
-//            else if (source == "cam2") {
-//                if (input.multitagResult.isPresent) {
-//                    val position: Pose2d = Vision.getRobotPositionFromSecondCamera(input)?.toPose2d() ?: return@add
-//                    swerveDrive.addVisionMeasurement(
-//                        Pose2d(position.x, position.y, position.rotation),
-//                        input.timestampSeconds
-//                    )
-//                }
-//            }
-//        }
+
+        swerveDrive.setVisionMeasurementStdDevs(Vision.getStandardDev(3.0))
+
+        // Updates odometry whenever vision sees apriltag
+        Vision.listeners.add("UpdateOdometry", {result, camera ->
+            //if(!input.multitagResult.isPresent) return
+            val newPose = camera.getEstimatedRobotPose(result) ?: return@add
+            addVisionMeasurement(newPose.toPose2d(), result.timestampSeconds)
+        })
 
 //        try{
 //            setupPathPlanner()
