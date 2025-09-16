@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.photonvision.targeting.PhotonPipelineResult
 
 class BeaverPhotonVision(vararg val cameras: VisionCamera) : SubsystemBase() {
-    val listeners = DoubleSignal<PhotonPipelineResult, VisionCamera>()
+    val listeners = BiSignal<PhotonPipelineResult, VisionCamera>()
 
     override fun periodic() {
         for(camera in cameras){

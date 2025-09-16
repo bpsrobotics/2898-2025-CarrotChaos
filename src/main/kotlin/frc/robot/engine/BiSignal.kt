@@ -4,7 +4,7 @@ package frc.robot.engine
  * A MutableMap used specifically for managing Lambdas
  * Specified Type is used as the input for argument for listener Lambdas
  */
-data class DoubleSignal<Type, Type2>(
+data class BiSignal<Type, Type2>(
     val listeners : MutableMap<String, (Type, Type2) -> Unit> = mutableMapOf()
 ) {
     /**
