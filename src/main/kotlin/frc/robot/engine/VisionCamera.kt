@@ -22,7 +22,5 @@ class VisionCamera(val name: String, val robotToCamera: Transform3d, layout: Apr
         if (estimatedPose.isEmpty) return null
         return estimatedPose.get().estimatedPose
     }
-    fun setReference(pose: Pose2d) {
-        poseEstimator.setReferencePose(pose)
-    }
+    fun setReference(pose: Pose2d) { poseEstimator.setReferencePose(pose) }
 }

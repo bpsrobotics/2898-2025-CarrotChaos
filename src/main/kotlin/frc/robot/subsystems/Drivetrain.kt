@@ -65,6 +65,13 @@ object Drivetrain : SubsystemBase() {
         swerveDrive.setCosineCompensator(false) //!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
         swerveDrive.setMotorIdleMode(false)
 
+        // Updates odometry whenever vision sees apriltag
+        Vision.listeners.add("UpdateOdometry", {result, camera ->
+            //if(!input.multitagResult.isPresent) return
+            val newPose = camera.getEstimatedRobotPose(result) ?: return@add
+            addVisionMeasurement(newPose.toPose2d(), result.timestampSeconds)
+        })
+
         //setupPathPlanner()
 
     }
@@ -73,6 +80,7 @@ object Drivetrain : SubsystemBase() {
     override fun periodic() {
         posePublisher.set(pose)
         swerveStatePublisher.set(swerveDrive.states)
+        Vision.setAllCameraReferences(pose)
     }
 
     val getAlliance : () -> Boolean = {
