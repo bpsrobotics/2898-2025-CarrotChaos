@@ -25,32 +25,19 @@ import kotlin.math.pow
  * @see Drivetrain
  */
 class TeleopDriveCommand(
-    vForward: () -> Double,
-    vStrafe: () -> Double,
-    omega: () -> Double,
-    driveMode: () -> Boolean,
-    slowMode: () -> Double
+    val vForward: () -> Double,
+    val vStrafe: () -> Double,
+    val omega: () -> Double,
+    val driveMode: () -> Boolean,
+    val slowMode: () -> Double
 ) : Command() {
-    private val vForward: () -> Double
-    private val vStrafe: () -> Double
-    private val omega: () -> Double
-    private val driveMode: () -> Boolean
-    private val slowMode: () -> Double
-    private val controller: SwerveController
-    private val swerve: Drivetrain = Drivetrain
     var addSpeed = Transform2d()
     /** adds to the speed of the robot */
     val speedConsumer: (Transform2d) -> Unit = { addSpeed += it}
 
     init {
-        this.vForward = vForward
-        this.vStrafe = vStrafe
-        this.omega = omega
-        this.driveMode = driveMode
-        this.slowMode = slowMode
-        controller = swerve.getSwerveController()
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(swerve)
+        addRequirements(Drivetrain)
     }
 
     /** @suppress */
@@ -86,10 +73,10 @@ class TeleopDriveCommand(
 //            angVelocity * controller.config.maxAngularVelocity,
 //            true
 //        )
-        swerve.driveFieldOriented(ChassisSpeeds(
-            forwardVelocity * swerve.maximumSpeed + addSpeed.translation.x,
-            strafeVelocity * swerve.maximumSpeed + addSpeed.translation.y,
-            angVelocity * swerve.maxAngularSpeed
+        Drivetrain.driveFieldOriented(ChassisSpeeds(
+            forwardVelocity * Drivetrain.maximumSpeed + addSpeed.translation.x,
+            strafeVelocity * Drivetrain.maximumSpeed + addSpeed.translation.y,
+            angVelocity * Drivetrain.maxAngularSpeed
         ))
     }
 

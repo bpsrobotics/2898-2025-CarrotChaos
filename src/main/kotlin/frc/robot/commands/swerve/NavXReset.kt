@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.OI
+import frc.robot.commands.OI.Rumble
 import frc.robot.subsystems.Drivetrain
 
 class NavXReset: Command() {
@@ -20,7 +21,7 @@ class NavXReset: Command() {
         time.reset()
         time.start()
         swerve.zeroGyro()
-        OI.Rumble.set(0.25,1.0, GenericHID.RumbleType.kRightRumble)
+        Rumble(GenericHID.RumbleType.kRightRumble, 0.25, 1.0).schedule()
     }
 
     override fun isFinished(): Boolean {
