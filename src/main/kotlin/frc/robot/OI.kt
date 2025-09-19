@@ -12,8 +12,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.POVButton
+import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.beaverlib.async.Promise
 import frc.robot.commands.OI.Rumble
+import frc.robot.commands.swerve.NavXReset
 
 import kotlin.math.pow
 import kotlin.math.sign
@@ -31,6 +33,17 @@ import kotlin.math.sign
 object OI : SubsystemBase() {
     init {
         defaultCommand = Rumble(GenericHID.RumbleType.kBothRumble, 0.0)
+    }
+
+    val navXResetCommand: NavXReset = NavXReset()
+
+    /**
+     * Use this method to define your trigger->command mappings. Triggers can be created via the
+     * [Trigger.Trigger] constructor with an arbitrary
+     * predicate, or via the named factories in [ ]'s subclasses for [ ]/[ PS4][edu.wpi.first.wpilibj2.command.button.CommandPS4Controller] controllers or [Flight][edu.wpi.first.wpilibj2.command.button.CommandJoystick].
+     */
+    fun configureBindings() {
+        resetGyro.whileTrue(navXResetCommand)
     }
 
     /**
