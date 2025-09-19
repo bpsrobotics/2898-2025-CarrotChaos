@@ -92,6 +92,9 @@ object Drivetrain : SubsystemBase() {
     fun driveFieldOriented(speeds: ChassisSpeeds) {
         swerveDrive.driveFieldOriented(speeds)
     }
+    fun driveRobotOriented(speeds: ChassisSpeeds) {
+        swerveDrive.drive(speeds)
+    }
 
     /**
      * Directly send voltage to the drive motors.
