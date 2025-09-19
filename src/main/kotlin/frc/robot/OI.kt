@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.POVButton
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.beaverlib.async.Promise
+import frc.robot.commands.FollowApriltag
 import frc.robot.commands.OI.Rumble
 import frc.robot.commands.swerve.NavXReset
 
@@ -36,6 +37,7 @@ object OI : SubsystemBase() {
     }
 
     val navXResetCommand: NavXReset = NavXReset()
+    val followTagCommand = FollowApriltag(6)
 
     /**
      * Use this method to define your trigger->command mappings. Triggers can be created via the
@@ -44,6 +46,7 @@ object OI : SubsystemBase() {
      */
     fun configureBindings() {
         resetGyro.whileTrue(navXResetCommand)
+        followTag.whileTrue(followTagCommand)
     }
 
     /**
@@ -110,6 +113,7 @@ object OI : SubsystemBase() {
         get() = driverController.rightTriggerAxis
 
     val resetGyro = driverController.rightBumper()
+    val followTag = driverController.leftBumper()
     val sysidFQ = driverController.x()
     val sysidBQ = driverController.y()
     val sysidFD = driverController.b()
