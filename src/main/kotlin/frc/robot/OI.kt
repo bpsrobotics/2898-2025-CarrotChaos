@@ -4,16 +4,10 @@ import beaverlib.utils.geometry.Vector2
 
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.GenericHID
-import edu.wpi.first.wpilibj.Joystick
-import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
-import edu.wpi.first.wpilibj2.command.button.JoystickButton
-import edu.wpi.first.wpilibj2.command.button.POVButton
 import edu.wpi.first.wpilibj2.command.button.Trigger
-import frc.beaverlib.async.Promise
 import frc.robot.commands.FollowApriltag
 import frc.robot.commands.OI.Rumble
 import frc.robot.commands.swerve.NavXReset
@@ -42,7 +36,7 @@ object OI : SubsystemBase() {
     /**
      * Use this method to define your trigger->command mappings. Triggers can be created via the
      * [Trigger.Trigger] constructor with an arbitrary
-     * predicate, or via the named factories in [ ]'s subclasses for [ ]/[ PS4][edu.wpi.first.wpilibj2.command.button.CommandPS4Controller] controllers or [Flight][edu.wpi.first.wpilibj2.command.button.CommandJoystick].
+     * predicate, or via the named factories in [ ]'s subclasses for [ ]/[ PS4][edu.wpi.first.wpilibj2.command.button.CommandPS4Controller] controllers or [Flight][CommandJoystick].
      */
     fun configureBindings() {
         resetGyro.whileTrue(navXResetCommand)
@@ -112,15 +106,15 @@ object OI : SubsystemBase() {
     val rightTrigger
         get() = driverController.rightTriggerAxis
 
-    val resetGyro = driverController.rightBumper()
-    val followTag = driverController.leftBumper()
-    val sysidFQ = driverController.x()
-    val sysidBQ = driverController.y()
-    val sysidFD = driverController.b()
-    val sysidBD = driverController.a()
+    val resetGyro: Trigger = driverController.rightBumper()
+    val followTag: Trigger = driverController.leftBumper()
+    val sysidFQ: Trigger = driverController.x()
+    val sysidBQ: Trigger = driverController.y()
+    val sysidFD: Trigger = driverController.b()
+    val sysidBD: Trigger = driverController.a()
 
-    val highHatForward = operatorController.pov(0)
-    val highHatBack = operatorController.pov(180)
+    val highHatForward: Trigger = operatorController.pov(0)
+    val highHatBack: Trigger = operatorController.pov(180)
 //    val hatVector get() = when (operatorController.pov) {
 //        0 -> Vector2(0.0,1.0)
 //        90 -> Vector2(1.0,0.0)
