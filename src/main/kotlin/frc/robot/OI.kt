@@ -31,7 +31,7 @@ object OI : SubsystemBase() {
     }
 
     val navXResetCommand: NavXReset = NavXReset()
-    val followTagCommand = FollowApriltag(6)
+    val followTagCommand = FollowApriltag(4)
 
     /**
      * Use this method to define your trigger->command mappings. Triggers can be created via the

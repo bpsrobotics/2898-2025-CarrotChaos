@@ -18,6 +18,7 @@ import edu.wpi.first.networktables.StructPublisher
 import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
@@ -65,12 +66,14 @@ object Drivetrain : SubsystemBase() {
         swerveDrive.setCosineCompensator(false) //!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
         swerveDrive.setMotorIdleMode(false)
 
+
         // Updates odometry whenever vision sees apriltag
         Vision.listeners.add("UpdateOdometry", {result, camera ->
             //if(!input.multitagResult.isPresent) return
             val newPose = camera.getEstimatedRobotPose(result) ?: return@add
             addVisionMeasurement(newPose.toPose2d(), result.timestampSeconds)
         })
+        setVisionMeasurementStdDevs(3.0, 3.0, 99.0)
 
         //setupPathPlanner()
 
@@ -81,6 +84,9 @@ object Drivetrain : SubsystemBase() {
         posePublisher.set(pose)
         swerveStatePublisher.set(swerveDrive.states)
         Vision.setAllCameraReferences(pose)
+        SmartDashboard.putNumber("Odometry/X", pose.x)
+        SmartDashboard.putNumber("Odometry/Y", pose.y)
+        SmartDashboard.putNumber("Odometry/HEADING", pose.rotation.radians)
     }
 
     val getAlliance : () -> Boolean = {

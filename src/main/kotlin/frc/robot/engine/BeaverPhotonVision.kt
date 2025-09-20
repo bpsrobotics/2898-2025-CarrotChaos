@@ -26,10 +26,10 @@ class BeaverPhotonVision(vararg val cameras: VisionCamera) : SubsystemBase() {
         }
     }
 
-    fun getStandardDev(rotationSTD: Double): Matrix<N3, N1>{
+    fun getStandardDev(STDVX : Double, STDVY : Double, rotationSTD: Double): Matrix<N3, N1>{
         val stdv = Matrix(Nat.N3(), Nat.N1())
-        stdv.set(0,0, 3.0)
-        stdv.set(1,0, 3.0)
+        stdv.set(0,0, STDVX)
+        stdv.set(1,0, STDVY)
         stdv.set(2,0, rotationSTD)
         return stdv
     }

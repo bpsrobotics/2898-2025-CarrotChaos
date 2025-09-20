@@ -1,7 +1,10 @@
 package frc.robot.commands
 
 import beaverlib.utils.Units.Angular.asDegrees
+import beaverlib.utils.Units.Angular.degrees
 import beaverlib.utils.Units.Angular.radians
+import edu.wpi.first.math.controller.PIDController
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.Drivetrain
@@ -27,15 +30,29 @@ class FollowApriltag(val apriltagId : Int) : Command() {
     }
 
     override fun execute() {
-        if(desiredTag == null) { return}
+        if(desiredTag == null) {
+            Drivetrain.driveRobotOriented(ChassisSpeeds())
+            return
+        }
         val yawToTag = desiredTag!!.bestCameraToTarget.rotation.z
-        if(yawToTag.radians.asDegrees.absoluteValue > 5)
-        Drivetrain.driveRobotOriented(ChassisSpeeds(
-            0.0, 0.0, 0.1 * yawToTag.sign
-        ))
+        val kp = -3.0
+        val error = Rotation2d.fromDegrees(180.0).minus(Rotation2d.fromRadians(yawToTag)).radians
+        println(error)
+
+        if(error > 3.degrees.asRadians){
+            Drivetrain.driveRobotOriented(ChassisSpeeds(
+                0.0, 0.0, kp * error  + (-0.01 * error.sign)
+            ))
+            return
+        }
+
+
         val distanceToTag = desiredTag!!.bestCameraToTarget.x
-        if(distanceToTag < 1) Drivetrain.driveRobotOriented(ChassisSpeeds(
-            0.5, 0.0, 0.0
+        if(distanceToTag > 1.1) Drivetrain.driveRobotOriented(ChassisSpeeds(
+            1.0, 0.0, 0.0
+        ))
+        if(distanceToTag < 0.9) Drivetrain.driveRobotOriented(ChassisSpeeds(
+            -1.0, 0.0, 0.0
         ))
     }
 
