@@ -60,4 +60,8 @@ class FollowApriltag(val apriltagId : Int) : Command() {
         return false
     }
 
+    override fun end(interrupted: Boolean) {
+        Vision.listeners.remove("FollowTag")
+    }
+
 }
