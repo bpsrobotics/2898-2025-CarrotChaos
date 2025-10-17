@@ -98,10 +98,17 @@ object OI : SubsystemBase() {
 
         elevFWStepper.whileTrue(MoveElevatorBy(0.005))
         elevBWStepper.whileTrue(MoveElevatorBy(-0.005))
+        sysidBQ.whileTrue(MoveElevatorBy(0.005))
+        sysidBD.whileTrue(MoveElevatorBy(-0.005))
+
 
 //        pivotFWStepper.whileTrue(VoltageWrist(0.2))
         pivotFWStepper.whileTrue(MoveWristBy(-0.03))
         pivotBWStepper.whileTrue(MoveWristBy(0.03))
+        sysidFD.whileTrue(MoveWristBy(-0.03))
+        sysidFQ.whileTrue(MoveWristBy(0.03))
+
+
 
 //        pivotBWStepper.whileTrue(VoltageWrist(-0.2))
 
@@ -202,8 +209,10 @@ object OI : SubsystemBase() {
     val sysidFD: Trigger = driverController.b()
     val sysidBD: Trigger = driverController.a()
 
-    val highHatForward: Trigger = operatorController.pov(0)
-    val highHatBack: Trigger = operatorController.pov(180)
+//    val highHatForward: Trigger = operatorController.pov(0)
+//    val highHatBack: Trigger = operatorController.pov(180)
+    val highHatForward: Trigger = driverController.povRight()
+    val highHatBack: Trigger = driverController.povLeft()
 
     val moveL1 = operatorController.button(BASE_STAGE)
     val moveL2 = operatorController.button(CORAL_L2)
@@ -212,8 +221,8 @@ object OI : SubsystemBase() {
     val moveA1 = operatorController.button(ALGAE_B1)
     val moveA2 = operatorController.button(ALGAE_B2)
 
-    val coralAlignLeft = driverController.povLeft()
-    val coralAlignRight = driverController.povRight()
+//    val coralAlignLeft = driverController.povLeft()
+//    val coralAlignRight = driverController.povRight()
 
 
     val autoIntake = operatorController.button(AUTO_INTAKE)
