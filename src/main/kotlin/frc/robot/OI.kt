@@ -25,22 +25,8 @@ import frc.robot.Constants.ButtonConstants.ELEV_FW
 import frc.robot.Constants.ButtonConstants.PIVOT_BW
 import frc.robot.Constants.ButtonConstants.PIVOT_FW
 import frc.robot.Constants.ButtonConstants.TOGGLE_STATE
-import frc.robot.commands.AlignAprilTag
-import frc.robot.commands.AlignOdometry
-import frc.robot.commands.FollowApriltag
-import frc.robot.commands.FollowApriltagGood
 import frc.robot.commands.OI.Rumble
-import frc.robot.commands.ScoreTag
-import frc.robot.commands.elevator.MoveElevator
-import frc.robot.commands.elevator.MoveElevatorBy
-import frc.robot.commands.intake.RunIntake
-import frc.robot.commands.intake.RunOuttake
 import frc.robot.commands.OI.NavXReset
-import frc.robot.commands.elevator.StabilizeElevator
-import frc.robot.commands.wrist.MoveWrist
-import frc.robot.commands.wrist.MoveWristBy
-import frc.robot.commands.wrist.StabilizeWrist
-import frc.robot.commands.wrist.ToggleState
 
 import kotlin.math.pow
 import kotlin.math.sign
@@ -61,22 +47,7 @@ object OI : SubsystemBase() {
     }
 
     val navXResetCommand: NavXReset = NavXReset()
-    val followTagCommand = FollowApriltagGood(18)
-        //AlignOdometry(18,Pose2d(2.7, 4.27, Rotation2d(0.0)))
-        /*SequentialCommandGroup(
-            ParallelCommandGroup(
-                AlignOdometry(18, Pose2d(2.5, 4.29, Rotation2d(0.0))),
-                SequentialCommandGroup(MoveWrist(Constants.PivotConstants.PivotState.VerticalBranch.position),
-                    ParallelRaceGroup( MoveElevator(Constants.ElevatorConstants.ElevatorState.L4.position),
-                    StabilizeWrist()))
-            ),*
-        ParallelRaceGroup(
-            StabilizeWrist(),
-            StabilizeElevator(),
-            AlignOdometry(18, Pose2d(3.11, 4.29, Rotation2d(0.0)))
-        )
-
-    )*/
+    //val followTagCommand = FollowApriltagGood(18)
 
 
     /**
@@ -86,50 +57,6 @@ object OI : SubsystemBase() {
      */
     fun configureBindings() {
         resetGyro.whileTrue(navXResetCommand)
-        followTag.whileTrue(followTagCommand)
-
-
-        toggleWrist.onTrue(ToggleState())
-
-        autoIntake.onTrue(RunIntake())
-
-        highHatForward.whileTrue(RunOuttake(0.5))
-        highHatBack.whileTrue(RunOuttake(-1.0))
-
-        elevFWStepper.whileTrue(MoveElevatorBy(0.005))
-        elevBWStepper.whileTrue(MoveElevatorBy(-0.005))
-
-//        pivotFWStepper.whileTrue(VoltageWrist(0.2))
-        pivotFWStepper.whileTrue(MoveWristBy(-0.03))
-        pivotBWStepper.whileTrue(MoveWristBy(0.03))
-
-//        pivotBWStepper.whileTrue(VoltageWrist(-0.2))
-
-
-        OI.moveA1.onTrue(
-            SequentialCommandGroup(
-                MoveElevator(Constants.ElevatorConstants.ElevatorState.A1.position),
-                MoveWrist(Constants.PivotConstants.PivotState.Algae.position)
-            ))
-        OI.moveA2.onTrue(      SequentialCommandGroup(
-            MoveElevator(Constants.ElevatorConstants.ElevatorState.A2.position),
-            MoveWrist(Constants.PivotConstants.PivotState.Algae.position)
-
-        ))
-        OI.moveL1.onTrue(
-            MoveElevator(Constants.ElevatorConstants.ElevatorState.Stow.position)
-        )
-        OI.moveL2.onTrue(  SequentialCommandGroup(MoveWrist(Constants.PivotConstants.PivotState.Traverse.position),
-            MoveElevator(Constants.ElevatorConstants.ElevatorState.L2.position),
-            MoveWrist(Constants.PivotConstants.PivotState.AngleBranch.position)
-
-        ))
-        OI.moveL3.onTrue(        SequentialCommandGroup(MoveWrist(Constants.PivotConstants.PivotState.AngleBranch.position),
-            MoveElevator(Constants.ElevatorConstants.ElevatorState.L3.position),
-        ))
-        OI.moveL4.onTrue(SequentialCommandGroup(MoveWrist(Constants.PivotConstants.PivotState.VerticalBranch.position),
-
-            MoveElevator(Constants.ElevatorConstants.ElevatorState.L4.position)))
     }
 
     /**
