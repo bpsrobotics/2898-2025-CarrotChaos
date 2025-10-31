@@ -20,12 +20,12 @@ val customField : MutableList<AprilTag> = mutableListOf(
 //    ))))
 
 val Vision = BeaverPhotonVision(
-    VisionCamera(
+    /*VisionCamera(
         //"Arducam_John",
         "HD_USB_Camera",
         Transform3d(0.18,-0.33,0.2, Rotation3d()),
         layout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded),
         strategy = PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
         fallbackStrategy = PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
-    )
+    )*/
 )
