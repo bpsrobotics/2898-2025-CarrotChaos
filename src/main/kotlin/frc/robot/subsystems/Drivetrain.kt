@@ -48,7 +48,7 @@ object Drivetrain : SubsystemBase() {
     var swerveStatePublisher: StructArrayPublisher<SwerveModuleState> = NetworkTableInstance.getDefault().
         getStructArrayTopic("SwerveStates/swerveStates", SwerveModuleState.struct).publish()
     var posePublisher: StructPublisher<Pose2d> = NetworkTableInstance.getDefault()
-        .getStructTopic("MyPose", Pose2d.struct).publish()
+        .getStructTopic("RobotPose", Pose2d.struct).publish()
 
     init {
         // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
@@ -69,11 +69,12 @@ object Drivetrain : SubsystemBase() {
 
         // Updates odometry whenever vision sees apriltag
         Vision.listeners.add("UpdateOdometry", {result, camera ->
-            //if(!input.multitagResult.isPresent) return
+            if(result.targets.isEmpty()) return@add
+            if(!result.multitagResult.isPresent && (result.targets.first().poseAmbiguity > 0.3)) return@add
             val newPose = camera.getEstimatedRobotPose(result) ?: return@add
-            addVisionMeasurement(newPose.toPose2d(), result.timestampSeconds)
+            //addVisionMeasurement(newPose.toPose2d(), result.timestampSeconds, true)
         })
-        setVisionMeasurementStdDevs(3.0, 3.0, 99.0)
+        setVisionMeasurementStdDevs(3.0, 4.0, 5.0)
 
         //setupPathPlanner()
 
@@ -101,6 +102,7 @@ object Drivetrain : SubsystemBase() {
     fun driveRobotOriented(speeds: ChassisSpeeds) {
         swerveDrive.drive(speeds)
     }
+    fun stop() { driveRobotOriented(ChassisSpeeds())}
 
     /**
      * Directly send voltage to the drive motors.
@@ -310,8 +312,9 @@ object Drivetrain : SubsystemBase() {
      * @param measurement The pose measurement to add.
      * @param timestamp The timestamp of the pose measurement.
      */
-    fun addVisionMeasurement(measurement: Pose2d, timestamp: Double) {
-        swerveDrive.addVisionMeasurement(Pose2d(measurement.x, measurement.y, measurement.rotation), timestamp)
+    fun addVisionMeasurement(measurement: Pose2d, timestamp: Double, updateRotation: Boolean = false) {
+        if(updateRotation) swerveDrive.addVisionMeasurement(measurement, timestamp)
+        else swerveDrive.addVisionMeasurement(Pose2d(measurement.x, measurement.y, pose.rotation), timestamp)
     }
 
     /**

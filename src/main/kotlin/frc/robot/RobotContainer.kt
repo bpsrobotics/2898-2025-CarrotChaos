@@ -22,7 +22,7 @@ import frc.robot.OI.configureBindings
 import frc.robot.OI.resetGyro
 import frc.robot.subsystems.Drivetrain
 import frc.robot.commands.swerve.TeleopDriveCommand
-import frc.robot.commands.swerve.NavXReset
+import frc.robot.commands.OI.NavXReset
 import kotlin.math.pow
 import kotlin.math.sign
 

@@ -1,8 +1,21 @@
 package frc.robot
 
+import beaverlib.utils.Units.Angular.AngularAcceleration
+import beaverlib.utils.Units.Angular.AngularVelocity
+import beaverlib.utils.Units.Angular.radiansPerSecond
+import beaverlib.utils.Units.Angular.radiansPerSecondSquared
+import beaverlib.utils.Units.Linear.Acceleration
+import beaverlib.utils.Units.Linear.VelocityUnit
+import beaverlib.utils.Units.Linear.metersPerSecond
+import beaverlib.utils.Units.Linear.metersPerSecondSquared
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.config.PIDConstants
 import com.pathplanner.lib.controllers.PPHolonomicDriveController
+import com.pathplanner.lib.path.GoalEndState
+import com.pathplanner.lib.path.PathConstraints
+import com.pathplanner.lib.path.PathPlannerPath
+import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Rotation2d
 import frc.robot.Constants.AutoConstants.RotationD
 import frc.robot.Constants.AutoConstants.RotationI
 import frc.robot.Constants.AutoConstants.RotationP
@@ -12,6 +25,7 @@ import frc.robot.Constants.AutoConstants.TranslationP
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Drivetrain.driveConsumer
 import frc.robot.subsystems.Drivetrain.getAlliance
+import kotlin.math.PI
 
 object Autos {
 
@@ -61,6 +75,37 @@ object Autos {
 //        // TODO: Configure path planner's AutoBuilder
 //        return PathPlannerAuto(autoName)
 //    }
+    fun generatePath(vararg pose2dWaypoints: Pose2d, maxVelocity : VelocityUnit = 3.0.metersPerSecond, maxAcceleration : Acceleration = 3.0.metersPerSecondSquared,
+                     maxAngularVelocity : AngularVelocity = (2*PI).radiansPerSecond, maxAngularAcceleration: AngularAcceleration = (4* PI).radiansPerSecondSquared ): PathPlannerPath {
+        // Create a list of waypoints from poses. Each pose represents one waypoint.
+        // The rotation component of the pose should be the direction of travel. Do not use holonomic rotation.
+        val waypoints = PathPlannerPath.waypointsFromPoses(
+            pose2dWaypoints.asList()
+        )
+
+        val constraints = PathConstraints(
+            maxVelocity.asMetersPerSecond,
+            maxAcceleration.asMetersPerSecondSquared,
+            maxAngularVelocity.asRadiansPerSecond,
+            maxAngularAcceleration.asRadiansPerSecondSquared
+        ) // The constraints for this path.
+        // PathConstraints constraints = PathConstraints.unlimitedConstraints(12.0); // You can also use unlimited constraints, only limited by motor torque and nominal battery voltage
+
+        // Create the path using the waypoints created above
+        val path = PathPlannerPath(
+            waypoints,
+            constraints,
+            null,  // The ideal starting state, this is only relevant for pre-planned paths, so can be null for on-the-fly paths.
+            GoalEndState(
+                0.0,
+                Rotation2d.fromDegrees(-90.0)
+            ) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
+        )
+        // Prevent the path from being flipped if the coordinates are already correct
+        path.preventFlipping = true
+        return path
+
+    }
 
 
 }
