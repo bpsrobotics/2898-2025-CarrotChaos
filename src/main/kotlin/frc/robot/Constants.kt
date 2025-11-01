@@ -58,7 +58,7 @@ class Constants {
             Translation2d(-WheelBase / 2, -TrackWidth / 2)
         )
         // YAGSL `File` Configs
-        val DRIVE_CONFIG: File = File(Filesystem.getDeployDirectory(), "swerve1")
+        val DRIVE_CONFIG: File = File(Filesystem.getDeployDirectory(), "swerve1") //Name this the same as the wanted drive directory
 
         val MomentOfInertia = 4.09149392  // kg * m^2
     }
