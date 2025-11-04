@@ -1,16 +1,12 @@
-package frc.robot.commands
+package frc.robot.commands.vision
 
-import beaverlib.utils.Units.Angular.asDegrees
 import beaverlib.utils.Units.Angular.degrees
-import beaverlib.utils.Units.Angular.radians
-import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Vision
 import org.photonvision.targeting.PhotonTrackedTarget
-import kotlin.math.absoluteValue
 import kotlin.math.sign
 
 class FollowApriltag(val apriltagId : Int) : Command() {
@@ -40,20 +36,26 @@ class FollowApriltag(val apriltagId : Int) : Command() {
         println(error)
 
         if(error > 3.degrees.asRadians){
-            Drivetrain.driveRobotOriented(ChassisSpeeds(
-                0.0, 0.0, kp * error  + (-0.01 * error.sign)
-            ))
+            Drivetrain.driveRobotOriented(
+                ChassisSpeeds(
+                    0.0, 0.0, kp * error + (-0.01 * error.sign)
+                )
+            )
             return
         }
 
 
         val distanceToTag = desiredTag!!.bestCameraToTarget.x
-        if(distanceToTag > 1.1) Drivetrain.driveRobotOriented(ChassisSpeeds(
-            1.0, 0.0, 0.0
-        ))
-        if(distanceToTag < 0.9) Drivetrain.driveRobotOriented(ChassisSpeeds(
-            -1.0, 0.0, 0.0
-        ))
+        if(distanceToTag > 1.1) Drivetrain.driveRobotOriented(
+            ChassisSpeeds(
+                1.0, 0.0, 0.0
+            )
+        )
+        if(distanceToTag < 0.9) Drivetrain.driveRobotOriented(
+            ChassisSpeeds(
+                -1.0, 0.0, 0.0
+            )
+        )
     }
 
     override fun isFinished(): Boolean {

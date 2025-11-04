@@ -23,6 +23,7 @@ import frc.robot.OI.resetGyro
 import frc.robot.subsystems.Drivetrain
 import frc.robot.commands.swerve.TeleopDriveCommand
 import frc.robot.commands.OI.NavXReset
+import frc.robot.subsystems.Intake
 import kotlin.math.pow
 import kotlin.math.sign
 
@@ -71,5 +72,6 @@ class RobotContainer {
 
     private fun initializeObjects() {
         Drivetrain
+        Intake
     }
 }

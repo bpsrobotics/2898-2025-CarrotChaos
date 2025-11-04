@@ -1,20 +1,16 @@
-package frc.robot.commands
+package frc.robot.commands.vision
 
 import beaverlib.utils.Sugar.clamp
-import beaverlib.utils.Units.Angular.asDegrees
 import beaverlib.utils.Units.Angular.degrees
 import beaverlib.utils.Units.Angular.radians
 import beaverlib.utils.geometry.HedgeHogVector2
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.engine.CircularPID
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Vision
-import org.opencv.photo.Photo
 import org.photonvision.targeting.PhotonTrackedTarget
 import kotlin.math.absoluteValue
 import kotlin.math.cos
@@ -23,7 +19,7 @@ import kotlin.math.sin
 
 class AlignAprilTag(val apriltagId : Int, var yToTag : Double = 0.0) : Command() {
     val timer = Timer()
-    val yPID = PIDController(2.0,0.1,0.1)
+    val yPID = PIDController(2.0, 0.1, 0.1)
     val rotationPID = PIDController(2.0, 0.2, 0.0)
     init {
         addRequirements(Drivetrain)
@@ -54,7 +50,7 @@ class AlignAprilTag(val apriltagId : Int, var yToTag : Double = 0.0) : Command()
 
     }
 
-    var estimatedTagPos = HedgeHogVector2.new(0,0)
+    var estimatedTagPos = HedgeHogVector2.Companion.new(0,0)
 
     override fun execute() {
 
@@ -71,9 +67,9 @@ class AlignAprilTag(val apriltagId : Int, var yToTag : Double = 0.0) : Command()
         val xDistVector = desiredTag!!.bestCameraToTarget.x
         val yDistVector = desiredTag!!.bestCameraToTarget.y
         //println(error)
-        val robotPos = HedgeHogVector2(0.0,-Vision.cameras.first().robotToCamera.y)
-        val xVector = HedgeHogVector2.new(yawToTag, xDistVector)
-        val yVector = HedgeHogVector2.new(yawToTag - 90.degrees, yDistVector)
+        val robotPos = HedgeHogVector2(0.0, -Vision.cameras.first().robotToCamera.y)
+        val xVector = HedgeHogVector2.Companion.new(yawToTag, xDistVector)
+        val yVector = HedgeHogVector2.Companion.new(yawToTag - 90.degrees, yDistVector)
 
         val tagPos = robotPos + xVector + yVector
         //println("$tagPos, rotation:${yawToTag.asDegrees}")
@@ -95,9 +91,11 @@ class AlignAprilTag(val apriltagId : Int, var yToTag : Double = 0.0) : Command()
 
 
 
-        Drivetrain.driveRobotOriented(ChassisSpeeds(
-            xSpeed, ySpeed, rotationSpeed
-        ))
+        Drivetrain.driveRobotOriented(
+            ChassisSpeeds(
+                xSpeed, ySpeed, rotationSpeed
+            )
+        )
     }
     var trueFrames = 0
     var lastDesiredTag : PhotonTrackedTarget? = null

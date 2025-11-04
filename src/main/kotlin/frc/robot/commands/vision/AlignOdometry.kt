@@ -1,4 +1,4 @@
-package frc.robot.commands
+package frc.robot.commands.vision
 
 import beaverlib.utils.Sugar.clamp
 import beaverlib.utils.Units.Angular.degrees
@@ -13,10 +13,10 @@ import kotlin.math.absoluteValue
 import kotlin.math.sign
 
 //3, 3.2
-class AlignOdometry(val apriltagId : Int, var targetPose2d : Pose2d = Pose2d(3.1, 4.24, Rotation2d(0.0)), val maxSpeed : Double = 1.5,val maxRotSpeed : Double = 1.0) : Command() {
+class AlignOdometry(val apriltagId : Int, var targetPose2d : Pose2d = Pose2d(3.1, 4.24, Rotation2d(0.0)), val maxSpeed : Double = 1.5, val maxRotSpeed : Double = 1.0) : Command() {
     val timer = Timer()
-    val yPID = PIDController(3.0,0.3,0.1)
-    val xPID = PIDController(3.0,0.3,0.1)
+    val yPID = PIDController(3.0, 0.3, 0.1)
+    val xPID = PIDController(3.0, 0.3, 0.1)
 
     val rotationPID = PIDController(3.0, 0.2, 0.1)
     init {
@@ -60,9 +60,13 @@ class AlignOdometry(val apriltagId : Int, var targetPose2d : Pose2d = Pose2d(3.1
 
 
 
-        Drivetrain.driveFieldOriented(ChassisSpeeds(xSpeed.clamp(-maxSpeed,maxSpeed),
-            ySpeed.clamp(-maxSpeed,maxSpeed),
-            rotationSpeed.clamp(-maxRotSpeed,maxRotSpeed)))
+        Drivetrain.driveFieldOriented(
+            ChassisSpeeds(
+                xSpeed.clamp(-maxSpeed, maxSpeed),
+                ySpeed.clamp(-maxSpeed, maxSpeed),
+                rotationSpeed.clamp(-maxRotSpeed, maxRotSpeed)
+            )
+        )
     }
 
     override fun isFinished(): Boolean {

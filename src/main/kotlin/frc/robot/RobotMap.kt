@@ -2,15 +2,15 @@ package frc.robot
 
 object RobotMap {
     // Drivetrain CAN IDs
-    const val FrontLeftDrivingCanId = 11
-    const val FrontLeftCANCoderID = 12
-    const val FrontLeftTurningCanId = 10
+    const val FrontLeftDrivingCanId = 8
+    const val FrontLeftCANCoderID = 9
+    const val FrontLeftTurningCanId = 7
 
 
 
-    const val RearLeftDrivingCanId = 8
-    const val RearLeftCANCoderID = 9
-    const val RearLeftTurningCanId = 7
+    const val RearLeftDrivingCanId = 11
+    const val RearLeftCANCoderID = 12
+    const val RearLeftTurningCanId = 10
 
 
     const val FrontRightDrivingCanId = 2
@@ -24,14 +24,7 @@ object RobotMap {
     const val RearRightTurningCanId = 4
 
     // Subsystem CAN IDs
-    const val ElevatorLeftMasterID = 17
-    const val ElevatorLeftSlaveID = 18
-
-    const val ElevatorRightMasterID = 15
-    const val ElevatorRightSlaveID = 16
-
-    const val PivotDriverID = 13
-    const val EndEffectorID = 14
+    const val IntakeId = 13
 
     // DIO IDs
 
