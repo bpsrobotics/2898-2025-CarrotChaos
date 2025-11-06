@@ -3,7 +3,7 @@ package frc.robot.commands
 import beaverlib.utils.Sugar.clamp
 import beaverlib.utils.Units.Angular.degrees
 import beaverlib.utils.Units.Angular.radians
-import beaverlib.utils.geometry.HedgeHogVector2
+import beaverlib.utils.geometry.Vector2
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
@@ -50,7 +50,7 @@ class AlignAprilTag(val apriltagId : Int, var yToTag : Double = 0.0) : Command()
 
     }
 
-    var estimatedTagPos = HedgeHogVector2.new(0,0)
+    var estimatedTagPos = Vector2.new(0,0)
 
     override fun execute() {
 
@@ -67,9 +67,9 @@ class AlignAprilTag(val apriltagId : Int, var yToTag : Double = 0.0) : Command()
         val xDistVector = desiredTag!!.bestCameraToTarget.x
         val yDistVector = desiredTag!!.bestCameraToTarget.y
         //println(error)
-        val robotPos = HedgeHogVector2(0.0,-Vision.cameras.first().robotToCamera.y)
-        val xVector = HedgeHogVector2.new(yawToTag, xDistVector)
-        val yVector = HedgeHogVector2.new(yawToTag - 90.degrees, yDistVector)
+        val robotPos = Vector2(0.0,-Vision.cameras.first().robotToCamera.y)
+        val xVector = Vector2.new(yawToTag, xDistVector)
+        val yVector = Vector2.new(yawToTag - 90.degrees, yDistVector)
 
         val tagPos = robotPos + xVector + yVector
         //println("$tagPos, rotation:${yawToTag.asDegrees}")
