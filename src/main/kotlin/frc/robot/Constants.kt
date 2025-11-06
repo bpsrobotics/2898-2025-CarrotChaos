@@ -5,6 +5,7 @@
 
 package frc.robot
 
+import beaverlib.controls.PIDConstants
 import beaverlib.utils.Units.Angular.radians
 import beaverlib.utils.Units.Angular.radiansPerSecond
 import beaverlib.utils.Units.Linear.feet
@@ -59,17 +60,11 @@ class Constants {
         )
         // YAGSL `File` Configs
         val DRIVE_CONFIG: File = File(Filesystem.getDeployDirectory(), "swerve1")
-
-        val MomentOfInertia = 4.09149392  // kg * m^2
     }
 
     object OIConstants {
         const val DriverControllerPort = 0
-        @Suppress("SpellCheckingInspection")
-        const val DriveDeadband = 0.05
-        const val SpeedMultiplierMin = 0.4
-        const val SpeedMultiplierMax = 1.0
-        const val DEADZONE_THRESHOLD = 0.1
+        const val OperatorControllerPort = 1
     }
 
     object AutoConstants {
@@ -85,22 +80,14 @@ class Constants {
                 1
             ),
             *DriveKinematics
-
         )
+
         const val MaxAccelerationMetersPerSecondSquared = 3.0
         const val MaxAngularSpeedRadiansPerSecond = Math.PI
         const val MaxAngularSpeedRadiansPerSecondSquared = Math.PI
-        const val PXController = 1.0
-        const val PYController = 1.0
-        const val PThetaController = 1.0
 
-        const val TranslationP = 5.0
-        const val TranslationI = 0.0
-        const val TranslationD = 0.0
-
-        const val RotationP = 0.01
-        const val RotationI = 0.0
-        const val RotationD = 0.0
+        val TranslationPIDConstant = PIDConstants(5.0,0.0,0.0)
+        val RotationPIDConstant = PIDConstants(0.01, 0.0, 0.0)
 
         // Constraint for the motion profiled robot angle controller
         val ThetaControllerConstraints = TrapezoidProfile.Constraints(
@@ -110,150 +97,11 @@ class Constants {
 
     // set to operator/driver's preferences
     object ButtonConstants {
-        //Driver buttons
-        const val RESET_GYRO = 6
 
-        const val CLIMBER_UP = 2 // very hard to press accidentally
-        const val CLIMBER_WAIT_DURATION = 0.5
-
-        //Driver buttons
-
-        //Operator Controls
-        const val TOGGLE_STATE = 1
-        const val AUTO_INTAKE = 2
-
-        const val PIVOT_FW = 5
-        const val PIVOT_BW = 3
-
-        const val ELEV_FW = 6
-        const val ELEV_BW = 4
-
-        const val BASE_STAGE = 7
-        const val CORAL_L2 = 8
-        const val CORAL_L3 = 10
-        const val CORAL_L4 = 12
-
-        const val ALGAE_B1 = 9
-        const val ALGAE_B2 = 11
-
-        const val PRESS_ACTIVATE_DURATION = 0.1
-        const val INPUT_BUFFER_DURATION = 0.2
-
-        //Operator Controls
     }
 
-    object VisionConstants {
-        const val CORAL_OFFSET_FROM_CENTER = 0.1524
-    }
-    object ElevatorConstants {
-        const val MaxVel = 1.0
-        const val MaxAccel = 2.0
+    object VisionConstants { }
 
-        //PID constants
-        const val kP = 16.0
-        const val kI = 3.0
-        const val kD = 0.1
-
-        //FF constants
-        const val kS = 0.1
-        //0.045
-        const val kV = 10.0 //8.14
-        //8.44
-        // 6.0
-//            1.5136
-        const val kG = 0.355
-        //0.355
-        const val kA = 0.0
-
-        //Max elev driver outputs
-        const val NEG_MAX_OUTPUT = -4.0
-        const val POS_MAX_OUTPUT = 12.0
-
-        //SOFT Stop limits
-        const val UPPER_LIMIT = 1.45
-        const val LOWER_LIMIT = 0.0
-
-        enum class ElevatorState(val position: Double) {
-            Stow(0.0),
-            L2(0.21),
-            L3(0.64),
-            L4(1.425),
-            A1(0.45),
-            A2(0.9),
-        }
-    }
-
-    object PivotConstants {
-        //Max elev driver outputs
-        const val NEG_MAX_OUTPUT = -1.75
-        const val POS_MAX_OUTPUT = 2.0
-
-        const val ObstructionAngle = 1.5
-
-        const val kP = 8.0
-        const val kI = 0.0
-        const val kD = 0.25
-
-        const val kS = 0.11
-        const val kG = 0.51
-        const val kV = 0.84
-        // 0.84
-
-        const val Max_Velocity = PI
-        const val Max_Accel = PI
-        //SOFT Stop limits
-        const val UPPER_LIMIT = -1.4
-        const val LOWER_LIMIT = 1.41
-
-
-        // FIXME set to real positions later
-        enum class PivotState(val position: Double) {
-            Traverse(0.4),
-            Stow(1.78),
-            AngleBranch(1.5),
-            VerticalBranch(0.6),
-            Algae(-0.95);
-
-            fun coralExtend() = when (this) {
-                Stow -> AngleBranch
-                AngleBranch -> Traverse
-                Traverse -> VerticalBranch
-                VerticalBranch -> VerticalBranch
-                Algae -> Algae
-            }
-            fun coralRetract() = when (this) {
-                Algae -> Algae
-                VerticalBranch -> Traverse
-                Traverse -> AngleBranch
-                AngleBranch -> Stow
-                Stow -> Stow
-            }
-            fun algaeExtend() = when (this) {
-                Stow -> Traverse
-                Traverse -> Algae
-                Algae -> Algae
-                VerticalBranch -> Algae
-                AngleBranch -> Traverse
-            }
-            fun algaeRetract() = when (this) {
-                Algae -> Traverse
-                Traverse -> Traverse
-                Stow -> Stow
-                VerticalBranch -> VerticalBranch
-                AngleBranch -> AngleBranch
-            }
-        }
-    }
-
-    object IntakeConstants {
-        const val ks = 0.0
-        const val kv = 0.0
-        const val ka = 0.0
-        const val DEBOUNCE = 0.01
-        const val STOP_TIME = 0.14
-        const val SENSOR_PIN = 7
-        const val INTAKE = 0.8
-        const val OUTTAKE = -0.4
-    }
+    object IntakeConstants { }
 
 }

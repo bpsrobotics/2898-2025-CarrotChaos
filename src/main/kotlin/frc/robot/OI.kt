@@ -13,18 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.Trigger
-import frc.robot.Constants.ButtonConstants.ALGAE_B1
-import frc.robot.Constants.ButtonConstants.ALGAE_B2
-import frc.robot.Constants.ButtonConstants.AUTO_INTAKE
-import frc.robot.Constants.ButtonConstants.BASE_STAGE
-import frc.robot.Constants.ButtonConstants.CORAL_L2
-import frc.robot.Constants.ButtonConstants.CORAL_L3
-import frc.robot.Constants.ButtonConstants.CORAL_L4
-import frc.robot.Constants.ButtonConstants.ELEV_BW
-import frc.robot.Constants.ButtonConstants.ELEV_FW
-import frc.robot.Constants.ButtonConstants.PIVOT_BW
-import frc.robot.Constants.ButtonConstants.PIVOT_FW
-import frc.robot.Constants.ButtonConstants.TOGGLE_STATE
+
 import frc.robot.commands.OI.Rumble
 import frc.robot.commands.OI.NavXReset
 
@@ -98,8 +87,8 @@ object OI : SubsystemBase() {
     fun Double.process(deadzone: Boolean = false, square: Boolean = false, cube: Boolean = false) =
         process(this, deadzone, square, cube)
 
-    val driverController = CommandXboxController(0)
-    private val operatorController = CommandJoystick(1)
+    val driverController = CommandXboxController(Constants.OIConstants.DriverControllerPort)
+    private val operatorController = CommandJoystick(Constants.OIConstants.OperatorControllerPort)
 
     // Right joystick y-axis.  Controller mapping can be tricky, the best way is to use the driver station to see what buttons and axis are being pressed.
     // Squared for better control on turn, cubed on throttle
@@ -132,25 +121,6 @@ object OI : SubsystemBase() {
     val highHatForward: Trigger = operatorController.pov(0)
     val highHatBack: Trigger = operatorController.pov(180)
 
-    val moveL1 = operatorController.button(BASE_STAGE)
-    val moveL2 = operatorController.button(CORAL_L2)
-    val moveL3 = operatorController.button(CORAL_L3)
-    val moveL4 = operatorController.button(CORAL_L4)
-    val moveA1 = operatorController.button(ALGAE_B1)
-    val moveA2 = operatorController.button(ALGAE_B2)
-
-    val coralAlignLeft = driverController.povLeft()
-    val coralAlignRight = driverController.povRight()
-
-
-    val autoIntake = operatorController.button(AUTO_INTAKE)
-    val toggleWrist = operatorController.button(TOGGLE_STATE)
-
-    val pivotFWStepper = operatorController.button(PIVOT_FW)
-    val pivotBWStepper = operatorController.button(PIVOT_BW)
-
-    val elevFWStepper = operatorController.button(ELEV_FW)
-    val elevBWStepper = operatorController.button(ELEV_BW)
 //    val hatVector get() = when (operatorController.pov) {
 //        0 -> Vector2(0.0,1.0)
 //        90 -> Vector2(1.0,0.0)

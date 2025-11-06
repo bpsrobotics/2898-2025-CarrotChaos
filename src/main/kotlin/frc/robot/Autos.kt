@@ -1,5 +1,6 @@
 package frc.robot
 
+import beaverlib.controls.PathPlannerPID
 import beaverlib.utils.Units.Angular.AngularAcceleration
 import beaverlib.utils.Units.Angular.AngularVelocity
 import beaverlib.utils.Units.Angular.radiansPerSecond
@@ -16,12 +17,8 @@ import com.pathplanner.lib.path.PathConstraints
 import com.pathplanner.lib.path.PathPlannerPath
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
-import frc.robot.Constants.AutoConstants.RotationD
-import frc.robot.Constants.AutoConstants.RotationI
-import frc.robot.Constants.AutoConstants.RotationP
-import frc.robot.Constants.AutoConstants.TranslationD
-import frc.robot.Constants.AutoConstants.TranslationI
-import frc.robot.Constants.AutoConstants.TranslationP
+import frc.robot.Constants.AutoConstants.TranslationPIDConstant
+import frc.robot.Constants.AutoConstants.RotationPIDConstant
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Drivetrain.driveConsumer
 import frc.robot.subsystems.Drivetrain.getAlliance
@@ -36,8 +33,8 @@ object Autos {
             { Drivetrain.robotVelocity },  // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             driveConsumer,  // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
             PPHolonomicDriveController( // PPolonomicController is the built-in path following controller for holonomic drive trains
-                PIDConstants(TranslationP, TranslationI, TranslationD),  // Translation PID constants
-                PIDConstants(RotationP, RotationI, RotationD)
+                TranslationPIDConstant.PathPlannerPID,  // Translation PID constants
+                RotationPIDConstant.PathPlannerPID
             ),
             Constants.AutoConstants.Robot_Config,
             getAlliance,
