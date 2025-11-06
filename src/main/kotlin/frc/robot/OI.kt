@@ -31,6 +31,11 @@ import kotlin.math.sign
  */
 @Suppress("unused")
 object OI : SubsystemBase() {
+    object Constants {
+        const val DriverControllerPort = 0
+        const val OperatorControllerPort = 1
+    }
+
     init {
         defaultCommand = Rumble(GenericHID.RumbleType.kBothRumble, 0.0)
     }
