@@ -92,8 +92,8 @@ object OI : SubsystemBase() {
     fun Double.process(deadzone: Boolean = false, square: Boolean = false, cube: Boolean = false) =
         process(this, deadzone, square, cube)
 
-    val driverController = CommandXboxController(Constants.OIConstants.DriverControllerPort)
-    private val operatorController = CommandJoystick(Constants.OIConstants.OperatorControllerPort)
+    val driverController = CommandXboxController(Constants.DriverControllerPort)
+    private val operatorController = CommandJoystick(Constants.OperatorControllerPort)
 
     // Right joystick y-axis.  Controller mapping can be tricky, the best way is to use the driver station to see what buttons and axis are being pressed.
     // Squared for better control on turn, cubed on throttle
