@@ -3,6 +3,8 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot.subsystems
 
+import beaverlib.utils.Units.Angular.radiansPerSecond
+import beaverlib.utils.Units.Linear.feetPerSecond
 import edu.wpi.first.math.*
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Pose2d
@@ -12,12 +14,14 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.trajectory.Trajectory
+import edu.wpi.first.math.util.Units
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.networktables.StructArrayPublisher
 import edu.wpi.first.networktables.StructPublisher
 import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.Filesystem
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.Command
@@ -25,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
-import frc.robot.Constants
 import swervelib.SwerveController
 import swervelib.SwerveDrive
 import swervelib.SwerveDriveTest
@@ -34,14 +37,34 @@ import swervelib.parser.SwerveDriveConfiguration
 import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
-
+import java.io.File
 
 object Drivetrain : SubsystemBase() {
+    object Constants {
+        val MaxSpeedMetersPerSecond = (3.1).feetPerSecond.asMetersPerSecond
+        val MaxAngularSpeedRadiansPerSecond = (Math.PI).radiansPerSecond.asRadiansPerSecond
+        // Chassis configuration (left to right dist of center of the wheels)
+        val TrackWidth = Units.inchesToMeters(11.5)
+
+        // Distance between centers of right and left wheels on robot (front to back dist)
+        val WheelBase = Units.inchesToMeters(11.5)
+
+        // Distance between front and back wheels on robot: CHANGE TO MATCH WITH ROBOT
+        val DriveKinematics = arrayOf(
+            Translation2d(WheelBase / 2, TrackWidth / 2),
+            Translation2d(WheelBase / 2, -TrackWidth / 2),
+            Translation2d(-WheelBase / 2, TrackWidth / 2),
+            Translation2d(-WheelBase / 2, -TrackWidth / 2)
+        )
+        // YAGSL `File` Configs
+        val DRIVE_CONFIG: File = File(Filesystem.getDeployDirectory(), "swerve1")
+    }
+
     var swerveDrive: SwerveDrive
 
     /** The maximum speed of the swerve drive */
-    var maximumSpeed = Constants.DriveConstants.MaxSpeedMetersPerSecond
-    var maxAngularSpeed = Constants.DriveConstants.MaxAngularSpeedRadiansPerSecond
+    var maximumSpeed = Constants.MaxSpeedMetersPerSecond
+    var maxAngularSpeed = Constants.MaxAngularSpeedRadiansPerSecond
 
 
     /** SwerveModuleStates publisher for swerve display */
@@ -56,7 +79,7 @@ object Drivetrain : SubsystemBase() {
 
         try {
             swerveDrive =
-                SwerveParser(Constants.DriveConstants.DRIVE_CONFIG).createSwerveDrive(Constants.DriveConstants.MaxSpeedMetersPerSecond)
+                SwerveParser(Constants.DRIVE_CONFIG).createSwerveDrive(Constants.MaxSpeedMetersPerSecond)
         } catch (e: Exception){
             e.printStackTrace()
             throw RuntimeException("error creating swerve",e)
