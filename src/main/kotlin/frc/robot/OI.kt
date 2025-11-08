@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger
 
 import frc.robot.commands.OI.Rumble
 import frc.robot.commands.OI.NavXReset
+import frc.robot.commands.intake.RunIntakeForTime
 
 import kotlin.math.pow
 import kotlin.math.sign
@@ -51,6 +52,10 @@ object OI : SubsystemBase() {
      */
     fun configureBindings() {
         resetGyro.whileTrue(navXResetCommand)
+
+        highHatBack.whileTrue(RunIntakeForTime(0.3)) // Intake
+        highHatForward.whileTrue(RunIntakeForTime(-0.3)) // Outtake
+
     }
 
     /**
