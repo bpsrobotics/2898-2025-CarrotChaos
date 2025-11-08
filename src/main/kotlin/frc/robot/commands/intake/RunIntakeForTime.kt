@@ -11,7 +11,7 @@ class RunIntakeForTime(val percent : Double, val time : Double = -1.0) : Command
 
     override fun initialize() {
         if(!isInfinite) timer.restart()
-        Intake.runMotor(0.5)
+        Intake.runMotor(percent)
     }
 
     override fun isFinished(): Boolean {

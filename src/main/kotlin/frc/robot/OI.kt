@@ -53,8 +53,8 @@ object OI : SubsystemBase() {
     fun configureBindings() {
         resetGyro.whileTrue(navXResetCommand)
 
-        highHatBack.whileTrue(RunIntakeForTime(0.3)) // Intake
-        highHatForward.whileTrue(RunIntakeForTime(-0.3)) // Outtake
+        highHatBack.whileTrue(RunIntakeForTime(0.6)) // Intake
+        highHatForward.whileTrue(RunIntakeForTime(-0.6)) // Outtake
 
     }
 
