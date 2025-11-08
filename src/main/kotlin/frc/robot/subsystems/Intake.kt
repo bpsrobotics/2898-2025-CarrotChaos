@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import com.revrobotics.spark.config.SparkBaseConfig
 import com.revrobotics.spark.config.SparkMaxConfig
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap
 import frc.robot.commands.intake.StopIntake
@@ -17,7 +18,8 @@ object Intake : SubsystemBase() {
         // Intake motor initialisation stuff
         IntakeConfig
             .idleMode(SparkBaseConfig.IdleMode.kBrake)
-            .smartCurrentLimit(20)
+            .smartCurrentLimit(35)
+            .inverted(true)
 
         intakeMotor.configure(
             IntakeConfig,
@@ -25,6 +27,11 @@ object Intake : SubsystemBase() {
             SparkBase.PersistMode.kPersistParameters
         )
         defaultCommand = StopIntake()
+    }
+
+    override fun periodic() {
+        SmartDashboard.putNumber("intake/motorVoltage", intakeMotor.busVoltage)
+        SmartDashboard.putNumber("intake/motorCurrent", intakeMotor.outputCurrent)
     }
 
     /**
