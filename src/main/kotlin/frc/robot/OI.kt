@@ -13,9 +13,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.Trigger
+import frc.robot.commands.IntakeForTimeOpenLoop
 
 import frc.robot.commands.OI.Rumble
 import frc.robot.commands.OI.NavXReset
+import frc.robot.commands.ShootForTimeOpenLoop
 import frc.robot.commands.intake.RunIntakeForTime
 
 import kotlin.math.pow
@@ -53,8 +55,11 @@ object OI : SubsystemBase() {
     fun configureBindings() {
         resetGyro.whileTrue(navXResetCommand)
 
-        highHatBack.whileTrue(RunIntakeForTime(0.6)) // Intake
+        highHatBack.whileTrue(IntakeForTimeOpenLoop(0.6, 0.6)) // Intake
         highHatForward.whileTrue(RunIntakeForTime(-0.6)) // Outtake
+
+        operatorTrigger.whileTrue(ShootForTimeOpenLoop(0.5,0.1, 0.1, 1.0))
+
 
     }
 
@@ -130,6 +135,7 @@ object OI : SubsystemBase() {
 
     val highHatForward: Trigger = operatorController.pov(0)
     val highHatBack: Trigger = operatorController.pov(180)
+    val operatorTrigger : Trigger = operatorController.trigger()
 
 //    val hatVector get() = when (operatorController.pov) {
 //        0 -> Vector2(0.0,1.0)
