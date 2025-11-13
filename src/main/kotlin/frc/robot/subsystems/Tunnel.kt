@@ -18,7 +18,7 @@ import beaverlib.utils.Units.*
 import frc.robot.commands.tunnel.StopTunnel
 
 object Tunnel : SubsystemBase() {
-    private val motor = SparkMax(RobotMap.IntakeId, SparkLowLevel.MotorType.kBrushless)
+    private val motor = SparkMax(RobotMap.TunnelId, SparkLowLevel.MotorType.kBrushless)
     private val motorConfig : SparkMaxConfig = SparkMaxConfig()
     object Constants {
         val Diameter =  6.inches //todo

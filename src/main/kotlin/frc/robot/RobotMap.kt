@@ -25,14 +25,16 @@ object RobotMap {
 
     // Subsystem CAN IDs
     const val IntakeId = 13
+    const val TunnelId = 14
+    const val FeederId = 15
+    const val ShooterTopId = 16
+    const val ShooterBotId = 17
 
     // DIO IDs
 
-    const val ElevatorID1 = 0
-    const val ElevatorID2 = 1
-    const val LimitBotID = 2
-    const val LimitTopID = 3
-    const val PivotPosID = 4
+    const val IntakeSharkId = 0
+    const val FeederSharkId = 1
+
 
     // I2C port
 
