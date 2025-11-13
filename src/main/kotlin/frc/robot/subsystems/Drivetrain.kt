@@ -41,7 +41,7 @@ import java.io.File
 
 object Drivetrain : SubsystemBase() {
     object Constants {
-        val MaxSpeedMetersPerSecond = (3.1).feetPerSecond.asMetersPerSecond
+        val MaxSpeedMetersPerSecond = (15.1).feetPerSecond.asMetersPerSecond
         val MaxAngularSpeedRadiansPerSecond = (Math.PI).radiansPerSecond.asRadiansPerSecond
         // Chassis configuration (left to right dist of center of the wheels)
         val TrackWidth = Units.inchesToMeters(11.5)

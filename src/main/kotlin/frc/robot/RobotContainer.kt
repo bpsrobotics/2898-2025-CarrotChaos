@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import frc.robot.OI.configureBindings
 import frc.robot.OI.resetGyro
+import frc.robot.OI.rightTrigger
 import frc.robot.subsystems.Drivetrain
 import frc.robot.commands.swerve.TeleopDriveCommand
 import frc.robot.commands.OI.NavXReset
@@ -49,7 +50,7 @@ class RobotContainer {
             { MathUtil.applyDeadband(translationX*reverseDrive, 0.1) },
             { MathUtil.applyDeadband(-turnX, 0.1)},
             { true },
-            { 0.25 }
+            { rightTrigger }
         )
 
 
