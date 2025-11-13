@@ -1,5 +1,7 @@
 package frc.robot.subsystems
 
+import beaverlib.controls.PIDConstants
+import beaverlib.controls.SimpleMotorFeedForwardConstants
 import beaverlib.utils.Units.Angular.AngularVelocity
 import beaverlib.utils.Units.Angular.radians
 import beaverlib.utils.Units.Linear.VelocityUnit
@@ -15,7 +17,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap
 import frc.robot.commands.intake.StopIntake
 import beaverlib.utils.Units.*
+import beaverlib.utils.Units.Angular.asRPM
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.commands.shooter.StopShooter
+import frc.robot.engine.PIDFF
 
 object Shooter : SubsystemBase() {
     private val motorTop = SparkMax(RobotMap.IntakeId, SparkLowLevel.MotorType.kBrushless)
@@ -28,7 +33,12 @@ object Shooter : SubsystemBase() {
 
     object Constants {
         val WheelRadius =  6.inches //todo
+        val pidConstants = PIDConstants(0.1, 0.0, 0.0)
+        val ffConstants = SimpleMotorFeedForwardConstants(0.0, 0.0, 0.0)
     }
+    val topMotorPIDFF : PIDFF = PIDFF(Constants.pidConstants, Constants.ffConstants)
+    val bottomMotorPIDFF : PIDFF = PIDFF(Constants.pidConstants, Constants.ffConstants)
+
 
     init {
         // Intake motor initialisation stuff
@@ -59,30 +69,60 @@ object Shooter : SubsystemBase() {
 
         defaultCommand = StopShooter()
     }
-
+    /** Runs both shooter motors using openloop at the given [percent] */
     fun runAtPercent(percent : Double) {
         motorTop.set(percent)
         motorBottom.set(percent)
     }
+    /** Runs the gate motor using openloop at the given [percent] */
     fun runGateAtPercent(percent : Double) {
         gateMotor.set(percent)
     }
 
+    /** Stops all motors (top, bottom, and gate) from running*/
     fun stop() {
         motorTop.stopMotor()
         motorBottom.stopMotor()
         gateMotor.stopMotor()
     }
+
+    /** Sets both shooter motors to stop running */
     fun stopShooter() {
         motorTop.stopMotor()
         motorBottom.stopMotor()
     }
+    /** Sets the gate motor to stop running */
     fun stopGate() {
         gateMotor.stopMotor()
     }
 
-    fun runAtSpeed(speed : AngularVelocity) {
-        //todo
+    /** Sets the PIDFF setpoint for both motors to [speed] */
+    fun setSpeed(speed : AngularVelocity) { setSpeeds(speed, speed) }
+    /** Sets the PIDFF setpoint for each motor to [topSpeed] and [bottomSpeed] */
+    fun setSpeeds(bottomSpeed : AngularVelocity, topSpeed : AngularVelocity) {
+        topMotorPIDFF.setpoint = topSpeed.asRPM
+        bottomMotorPIDFF.setpoint = bottomSpeed.asRPM
     }
-    fun runAtSpeed(speed : VelocityUnit) { runAtSpeed((speed / Constants.WheelRadius) * 1.radians) }
+
+    /**
+     * Runs the shooter using the current setpoint (given by [setSpeeds])
+     */
+    fun runPIDFF() {
+        motorTop.setVoltage(topMotorPIDFF.calculate(motorTop.encoder.velocity))
+        motorBottom.setVoltage(bottomMotorPIDFF.calculate(motorBottom.encoder.velocity))
+
+    }
+
+    /**
+     * Returns true if both PIDs [PIDFF.atSetpoint] returns true.
+     */
+    fun isAtSpeed() : Boolean{
+        return topMotorPIDFF.atSetpoint() && bottomMotorPIDFF.atSetpoint()
+    }
+
+    /** Put the top and bottom motor encoder RPMS to [SmartDashboard] */
+    override fun periodic() {
+        SmartDashboard.putNumber("Shooter/TopMotorRPM", motorTop.encoder.velocity)
+        SmartDashboard.putNumber("Shooter/BottomMotorRPM", motorBottom.encoder.velocity)
+    }
 }
