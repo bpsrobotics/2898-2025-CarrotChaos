@@ -18,15 +18,17 @@ import frc.robot.RobotMap
 import frc.robot.commands.intake.StopIntake
 import beaverlib.utils.Units.*
 import beaverlib.utils.Units.Angular.asRPM
+import com.cuforge.libcu.Lasershark
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import frc.robot.RobotMap.FeederSharkId
 import frc.robot.commands.shooter.StopShooter
 import frc.robot.engine.PIDFF
 
 object Shooter : SubsystemBase() {
-    private val motorTop = SparkMax(RobotMap.IntakeId, SparkLowLevel.MotorType.kBrushless)
-    private val motorBottom = SparkMax(RobotMap.IntakeId, SparkLowLevel.MotorType.kBrushless)
-    private val gateMotor = SparkMax(RobotMap.IntakeId, SparkLowLevel.MotorType.kBrushless)
-
+    private val motorTop = SparkMax(RobotMap.ShooterTopId, SparkLowLevel.MotorType.kBrushless)
+    private val motorBottom = SparkMax(RobotMap.ShooterBotId, SparkLowLevel.MotorType.kBrushless)
+    private val gateMotor = SparkMax(RobotMap.FeederId,SparkLowLevel.MotorType.kBrushless)
+    private val laserShark = Lasershark(FeederSharkId)
 
     private val shooterConfig : SparkMaxConfig = SparkMaxConfig()
     private val gateConfig : SparkMaxConfig = SparkMaxConfig()
