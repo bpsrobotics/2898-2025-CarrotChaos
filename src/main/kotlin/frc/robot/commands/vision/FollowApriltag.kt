@@ -9,24 +9,29 @@ import frc.robot.subsystems.Vision
 import org.photonvision.targeting.PhotonTrackedTarget
 import kotlin.math.sign
 
-class FollowApriltag(val apriltagId : Int) : Command() {
+class FollowApriltag(val apriltagId: Int) : Command() {
     init {
         addRequirements(Drivetrain)
     }
-    var desiredTag : PhotonTrackedTarget? = null
+
+    var desiredTag: PhotonTrackedTarget? = null
+
     override fun initialize() {
-        Vision.listeners.add("FollowTag", { result, camera ->
-            val desiredTagA = result.targets.filter { it.fiducialId == apriltagId}
-            if (desiredTagA.isEmpty()) {
-                desiredTag = null
-                return@add
-            }
-            desiredTag = desiredTagA.first()
-        })
+        Vision.listeners.add(
+            "FollowTag",
+            { result, camera ->
+                val desiredTagA = result.targets.filter { it.fiducialId == apriltagId }
+                if (desiredTagA.isEmpty()) {
+                    desiredTag = null
+                    return@add
+                }
+                desiredTag = desiredTagA.first()
+            },
+        )
     }
 
     override fun execute() {
-        if(desiredTag == null) {
+        if (desiredTag == null) {
             Drivetrain.driveRobotOriented(ChassisSpeeds())
             return
         }
@@ -35,27 +40,16 @@ class FollowApriltag(val apriltagId : Int) : Command() {
         val error = Rotation2d.fromDegrees(180.0).minus(Rotation2d.fromRadians(yawToTag)).radians
         println(error)
 
-        if(error > 3.degrees.asRadians){
+        if (error > 3.degrees.asRadians) {
             Drivetrain.driveRobotOriented(
-                ChassisSpeeds(
-                    0.0, 0.0, kp * error + (-0.01 * error.sign)
-                )
+                ChassisSpeeds(0.0, 0.0, kp * error + (-0.01 * error.sign))
             )
             return
         }
 
-
         val distanceToTag = desiredTag!!.bestCameraToTarget.x
-        if(distanceToTag > 1.1) Drivetrain.driveRobotOriented(
-            ChassisSpeeds(
-                1.0, 0.0, 0.0
-            )
-        )
-        if(distanceToTag < 0.9) Drivetrain.driveRobotOriented(
-            ChassisSpeeds(
-                -1.0, 0.0, 0.0
-            )
-        )
+        if (distanceToTag > 1.1) Drivetrain.driveRobotOriented(ChassisSpeeds(1.0, 0.0, 0.0))
+        if (distanceToTag < 0.9) Drivetrain.driveRobotOriented(ChassisSpeeds(-1.0, 0.0, 0.0))
     }
 
     override fun isFinished(): Boolean {
@@ -65,5 +59,4 @@ class FollowApriltag(val apriltagId : Int) : Command() {
     override fun end(interrupted: Boolean) {
         Vision.listeners.remove("FollowTag")
     }
-
 }

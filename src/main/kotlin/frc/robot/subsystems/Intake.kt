@@ -16,15 +16,12 @@ object Intake : SubsystemBase() {
 
     init {
         // Intake motor initialisation stuff
-        IntakeConfig
-            .idleMode(SparkBaseConfig.IdleMode.kBrake)
-            .smartCurrentLimit(35)
-            .inverted(true)
+        IntakeConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(35).inverted(true)
 
         intakeMotor.configure(
             IntakeConfig,
             SparkBase.ResetMode.kResetSafeParameters,
-            SparkBase.PersistMode.kPersistParameters
+            SparkBase.PersistMode.kPersistParameters,
         )
         defaultCommand = StopIntake()
     }
@@ -36,15 +33,14 @@ object Intake : SubsystemBase() {
 
     /**
      * Run the intake at the given speed
+     *
      * @param percent (-1, 1) the percent speed to run the motor at
      */
     fun runMotor(percent: Double) {
         intakeMotor.set(percent)
     }
 
-    /**
-     * Stops the intake motor
-     */
+    /** Stops the intake motor */
     fun stopMotor() {
         intakeMotor.stopMotor()
     }
