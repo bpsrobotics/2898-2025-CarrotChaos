@@ -34,7 +34,7 @@ object Shooter : SubsystemBase() {
     private val gateConfig : SparkMaxConfig = SparkMaxConfig()
 
     object Constants {
-        val WheelRadius =  6.inches //todo
+        val WheelRadius =  4.inches
         val pidConstants = PIDConstants(0.1, 0.0, 0.0)
         val ffConstants = SimpleMotorFeedForwardConstants(0.0, 0.0, 0.0)
     }
