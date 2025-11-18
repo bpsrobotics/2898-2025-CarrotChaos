@@ -18,23 +18,23 @@ import edu.wpi.first.wpilibj2.command.InstantCommand
 class Robot : TimedRobot() {
     var autoCommand: Command = InstantCommand()
     lateinit var robotContainer: RobotContainer
-    val commandScheduler : CommandScheduler = CommandScheduler.getInstance()
+    val commandScheduler: CommandScheduler = CommandScheduler.getInstance()
 
     /**
      * This function is run when the robot is first started up and should be used for any
      * initialization code.
      */
     override fun robotInit() {
-        // Instantiate our RobotContainer. This will perform all our button bindings, and put our autonomous chooser on the dashboard.
+        // Instantiate our RobotContainer. This will perform all our button bindings, and put our
+        // autonomous chooser on the dashboard.
         robotContainer = RobotContainer()
         SmartDashboard.putBoolean("/Auto/UseMovementAuto", true)
-//        CameraServer.startAutomaticCapture()
+        //        CameraServer.startAutomaticCapture()
     }
 
     /**
      * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
      * that you want ran during disabled, autonomous, teleoperated and test.
-     *
      *
      * This runs after the mode specific periodic functions, but before LiveWindow and
      * SmartDashboard integrated updating.
@@ -47,52 +47,46 @@ class Robot : TimedRobot() {
         commandScheduler.run()
     }
 
-    /** This function is called once each time the robot enters Disabled mode.  */
-    override fun disabledInit() {
-    }
+    /** This function is called once each time the robot enters Disabled mode. */
+    override fun disabledInit() {}
+
     override fun disabledPeriodic() {}
 
-    /** This autonomous runs the autonomous command selected by your [RobotContainer] class.  */
+    /** This autonomous runs the autonomous command selected by your [RobotContainer] class. */
     override fun autonomousInit() {
-//        if( SmartDashboard.getBoolean("/Auto/UseMovementAuto", false)) {
-//        autoCommand = TopTenAutosThatMove()
-//        autoCommand.schedule()
+        //        if( SmartDashboard.getBoolean("/Auto/UseMovementAuto", false)) {
+        //        autoCommand = TopTenAutosThatMove()
+        //        autoCommand.schedule()
 
         autoCommand = robotContainer.getAutonomousCommand()
         autoCommand.let { autoCommand.schedule() }
-
     }
 
-    /** This function is called periodically during autonomous.  */
+    /** This function is called periodically during autonomous. */
     override fun autonomousPeriodic() {}
-    override fun teleopInit() {
 
+    override fun teleopInit() {
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
-
         autoCommand.cancel()
-
-
-
     }
 
-    /** This function is called periodically during operator control.  */
-    override fun teleopPeriodic() {
+    /** This function is called periodically during operator control. */
+    override fun teleopPeriodic() {}
 
-    }
     override fun testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll()
     }
 
-    /** This function is called periodically during test mode.  */
+    /** This function is called periodically during test mode. */
     override fun testPeriodic() {}
 
-    /** This function is called once when the robot is first started up.  */
+    /** This function is called once when the robot is first started up. */
     override fun simulationInit() {}
 
-    /** This function is called periodically whilst in simulation.  */
+    /** This function is called periodically whilst in simulation. */
     override fun simulationPeriodic() {}
 }
