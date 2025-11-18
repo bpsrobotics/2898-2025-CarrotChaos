@@ -1,5 +1,7 @@
 package frc.robot.subsystems
 
+import beaverlib.utils.Units.Angular.AngularVelocity
+import beaverlib.utils.Units.Angular.RPM
 import com.revrobotics.spark.SparkBase
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
@@ -16,18 +18,18 @@ object Intake : SubsystemBase() {
 
     init {
         // Intake motor initialisation stuff
-        IntakeConfig
-            .idleMode(SparkBaseConfig.IdleMode.kBrake)
-            .smartCurrentLimit(35)
-            .inverted(true)
+        IntakeConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(35).inverted(true)
 
         intakeMotor.configure(
             IntakeConfig,
             SparkBase.ResetMode.kResetSafeParameters,
-            SparkBase.PersistMode.kPersistParameters
+            SparkBase.PersistMode.kPersistParameters,
         )
         defaultCommand = StopIntake()
     }
+
+    val speed: AngularVelocity
+        get() = intakeMotor.encoder.velocity.RPM
 
     override fun periodic() {
         SmartDashboard.putNumber("intake/motorVoltage", intakeMotor.busVoltage)
@@ -36,15 +38,14 @@ object Intake : SubsystemBase() {
 
     /**
      * Run the intake at the given speed
+     *
      * @param percent (-1, 1) the percent speed to run the motor at
      */
     fun runMotor(percent: Double) {
         intakeMotor.set(percent)
     }
 
-    /**
-     * Stops the intake motor
-     */
+    /** Stops the intake motor */
     fun stopMotor() {
         intakeMotor.stopMotor()
     }
