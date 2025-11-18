@@ -3,11 +3,18 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot
 
-import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import org.littletonrobotics.junction.LogFileUtil
+import org.littletonrobotics.junction.LoggedRobot
+import org.littletonrobotics.junction.Logger
+import org.littletonrobotics.junction.networktables.NT4Publisher
+import org.littletonrobotics.junction.wpilog.WPILOGReader
+import org.littletonrobotics.junction.wpilog.WPILOGWriter
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -15,16 +22,69 @@ import edu.wpi.first.wpilibj2.command.InstantCommand
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-class Robot : TimedRobot() {
+class Robot : LoggedRobot() {
     var autoCommand: Command = InstantCommand()
     lateinit var robotContainer: RobotContainer
     val commandScheduler : CommandScheduler = CommandScheduler.getInstance()
+    object Constants {
+        val simMode = Mode.SIM
+        val currentMode = if (RobotBase.isReal()) { Mode.REAL } else simMode
+        enum class Mode {
+            /** Running on a real robot.  */
+            REAL,
+
+            /** Running a physics simulator.  */
+            SIM,
+
+            /** Replaying from a log file.  */
+            REPLAY
+        }
+    }
+    // The log path can be read from anything, but this method is provided for convenience
+    var logPath: String? = LogFileUtil.findReplayLog() // The following sources are used automatically, with these priorities:
+    //
+    // 1. The value of the "AKIT_LOG_PATH" environment variable, if set
+    // 2. The file currently open in AdvantageScope, if available
+    // 3. The result of the prompt displayed to the user
+
 
     /**
      * This function is run when the robot is first started up and should be used for any
      * initialization code.
      */
     override fun robotInit() {
+        Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME)
+        Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE)
+        Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA)
+        Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE)
+        Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH)
+        Logger.setReplaySource(WPILOGReader(logPath))
+        // The addPathSuffix function generates a new filename by adding the suffix.
+        // If running replay repeatedly, a numeric index is added to the filename instead.
+        Logger.addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+
+        when (Constants.currentMode) {
+            Constants.Mode.REAL -> {
+                Logger.addDataReceiver(WPILOGWriter()) // Log to a USB stick ("/U/logs")
+                Logger.addDataReceiver(NT4Publisher()) // Publish data to NetworkTables
+            }
+            Constants.Mode.SIM -> {
+                Logger.addDataReceiver(NT4Publisher())
+            }
+            else -> {
+                setUseTiming(false) // Run as fast as possible
+                val logPath =
+                    LogFileUtil.findReplayLog() // Pull the replay log from AdvantageScope (or prompt the user)
+                Logger.setReplaySource(WPILOGReader(logPath)) // Read replay log
+                Logger.addDataReceiver(
+                    WPILOGWriter(
+                        LogFileUtil.addPathSuffix(logPath, "_sim")
+                    )
+                ) // Save outputs to a new log
+            }
+        }
+
+        Logger.start() // Start logging! No more data receivers, replay sources, or metadata values may be added.
         // Instantiate our RobotContainer. This will perform all our button bindings, and put our autonomous chooser on the dashboard.
         robotContainer = RobotContainer()
         SmartDashboard.putBoolean("/Auto/UseMovementAuto", true)
