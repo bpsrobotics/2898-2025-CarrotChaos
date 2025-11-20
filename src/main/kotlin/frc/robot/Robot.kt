@@ -60,8 +60,6 @@ class Robot : LoggedRobot() {
         Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH)
         Logger.setReplaySource(WPILOGReader(logPath))
         // The addPathSuffix function generates a new filename by adding the suffix.
-        // If running replay repeatedly, a numeric index is added to the filename instead.
-        Logger.addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
 
         when (Constants.currentMode) {
             Constants.Mode.REAL -> {
