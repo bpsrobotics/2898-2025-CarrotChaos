@@ -26,6 +26,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Drivetrain.driveConsumer
 import frc.robot.subsystems.Drivetrain.getAlliance
+import frc.robot.subsystems.Vision
 import kotlin.math.PI
 
 object Autos {
@@ -152,4 +153,10 @@ object Autos {
         path.preventFlipping = true
         return path
     }
+    fun test() {
+        Vision.cameras.get(0).results.forEach { photonPipelineResult -> photonPipelineResult. }
+        Vision.cameras[0].cam.allUnreadResults[0]
+        Vision.cameras[0].cam.
+    }
+
 }
