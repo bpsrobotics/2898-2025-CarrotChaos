@@ -97,8 +97,8 @@ object Tunnel : SubsystemBase() {
 
     override fun periodic() {
         CarrotCounter.update()
-        if (intakeDetector.justEntered() && !CarrotCounter.carrotInSensorRange())
-            CarrotCounter.carrots.add(Carrot(beltPosition))
-        if (feederDetector.justEntered()) CarrotCounter.shootCarrot()
+//        if (intakeDetector.justEntered() && !CarrotCounter.carrotInSensorRange())
+//            CarrotCounter.carrots.add(Carrot(beltPosition))
+//        if (feederDetector.justEntered()) CarrotCounter.shootCarrot()
     }
 }

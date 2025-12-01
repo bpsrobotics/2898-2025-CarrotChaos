@@ -67,9 +67,9 @@ object Shooter : SubsystemBase() {
         )
 
         // Intake motor initialisation stuff
-        gateConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(20)
+        gateConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(40)
         gateMotor.configure(
-            gateConfig,
+            gateConfig.inverted(true),
             SparkBase.ResetMode.kResetSafeParameters,
             SparkBase.PersistMode.kPersistParameters,
         )
@@ -132,12 +132,13 @@ object Shooter : SubsystemBase() {
     override fun periodic() {
         SmartDashboard.putNumber("Shooter/TopMotorRPM", motorTop.encoder.velocity)
         SmartDashboard.putNumber("Shooter/BottomMotorRPM", motorBottom.encoder.velocity)
+        SmartDashboard.putNumber("Gate/Current", gateMotor.outputCurrent)
         // mechanism2d.setBackgroundColor(Color8Bit(255,172,28))
-        mechanism2d
-            .getRoot("Test", 1.0, 1.0)
-            .append<MechanismLigament2d>(
-                MechanismLigament2d("Babber", 1.0, 90.0, 2.0, Color8Bit(255, 172, 28))
-            )
-        SmartDashboard.putData("Mech2D", mechanism2d)
+//            mechanism2d
+//                .getRoot("Test", 1.0, 1.0)
+//                .append<MechanismLigament2d>(
+//                    MechanismLigament2d("Babber", 1.0, 90.0, 2.0, Color8Bit(255, 172, 28))
+//                )
+//            SmartDashboard.putData("Mech2D", mechanism2d)
     }
 }
