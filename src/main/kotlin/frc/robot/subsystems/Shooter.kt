@@ -12,13 +12,15 @@ import com.revrobotics.spark.SparkMax
 import com.revrobotics.spark.config.SparkBaseConfig
 import com.revrobotics.spark.config.SparkMaxConfig
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj.util.Color8Bit
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
 import frc.robot.RobotMap
 import frc.robot.commands.shooter.StopShooter
 import frc.robot.engine.PIDFF
+import frc.robot.engine.SysIdMotorLogger
 import frc.robot.subsystems.Shooter.setSpeeds
 
 object Shooter : SubsystemBase() {
@@ -83,6 +85,45 @@ object Shooter : SubsystemBase() {
         )
 
         defaultCommand = StopShooter()
+    }
+
+    // Creates a SysIdRoutine
+    val topMotorLogger = SysIdMotorLogger("shooter-top", motorTop)
+    val botMotorLogger = SysIdMotorLogger("shooter-bottom", motorBottom)
+
+    var routine: SysIdRoutine =
+        SysIdRoutine(
+            SysIdRoutine.Config(),
+            Mechanism(
+                { volts ->
+                    motorTop.setVoltage(volts)
+                    motorBottom.setVoltage(volts)
+                },
+                { log ->
+                    // Record a frame for the shooter motor.
+                    topMotorLogger.log(log)
+                    botMotorLogger.log(log)
+                },
+                this,
+            ),
+        )
+
+    /**
+     * Returns a command that will execute a quasistatic test in the given direction.
+     *
+     * @param direction The direction (forward or reverse) to run the test in
+     */
+    fun sysIdQuasistatic(direction: SysIdRoutine.Direction?): Command {
+        return routine.quasistatic(direction)
+    }
+
+    /**
+     * Returns a command that will execute a dynamic test in the given direction.
+     *
+     * @param direction The direction (forward or reverse) to run the test in
+     */
+    fun sysIdDynamic(direction: SysIdRoutine.Direction?): Command {
+        return routine.dynamic(direction)
     }
 
     /** Runs both shooter motors using openloop at the given [percent] */
