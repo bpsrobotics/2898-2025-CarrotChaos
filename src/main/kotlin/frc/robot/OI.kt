@@ -11,6 +11,8 @@ import frc.robot.OI.process
 import frc.robot.commands.IntakeForTimeOpenLoop
 import frc.robot.commands.OI.NavXReset
 import frc.robot.commands.OI.Rumble
+import frc.robot.commands.OutakeRobot
+import frc.robot.commands.RunAllRobotForTime
 import frc.robot.commands.ShootForTimeOpenLoop
 import frc.robot.commands.intake.RunIntakeForTime
 import kotlin.math.pow
@@ -47,10 +49,17 @@ object OI : SubsystemBase() {
     fun configureBindings() {
         resetGyro.whileTrue(navXResetCommand)
 
-        highHatBack.whileTrue(IntakeForTimeOpenLoop(0.6, 0.6)) // Intake
-        highHatForward.whileTrue(RunIntakeForTime(-0.6)) // Outtake
+        highHatBack.and(operatorTrigger.negate()).whileTrue(
+            IntakeForTimeOpenLoop(1.0, 0.6, 0.05)) // Intake
+        highHatForward.whileTrue(
+            OutakeRobot(0.6, 0.1, 0.1, 0.1)
+        ) // Outtake
 
-        operatorTrigger.whileTrue(ShootForTimeOpenLoop(0.5, 0.1, 0.1, 1.0))
+        operatorTrigger.and(highHatBack.negate()).whileTrue(
+            ShootForTimeOpenLoop(0.5, 0.6, 0.6, 0.4))
+        operatorTrigger.and(highHatBack).whileTrue(
+            RunAllRobotForTime(0.6, 0.5, 1.0, 0.6, 0.4))
+
     }
 
     /**
