@@ -50,7 +50,15 @@ object Shooter : SubsystemBase() {
     val shooterSpeed
         get() = (topMotorSpeed + bottomMotorSpeed) / 2.0
 
+    // val Carrot1 = MechanismLigament2d("Carrot1", 2.5, 0.0, 20.0, Color8Bit(255, 172, 28))
+
     init {
+        /*mechanism2d.getRoot("Carrot1Pos", 1.0, 1.0).append<MechanismLigament2d>(Carrot1)
+        mechanism2d
+            .getRoot("Base", 1.0, 0.4)
+            .append<MechanismLigament2d>(
+                MechanismLigament2d("Base", 10.0, 0.0, 20.0, Color8Bit(0, 0, 0))
+            )*/
 
         // Intake motor initialisation stuff
         shooterConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(20)
@@ -67,9 +75,9 @@ object Shooter : SubsystemBase() {
         )
 
         // Intake motor initialisation stuff
-        gateConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(40)
+        gateConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(20)
         gateMotor.configure(
-            gateConfig.inverted(true),
+            gateConfig,
             SparkBase.ResetMode.kResetSafeParameters,
             SparkBase.PersistMode.kPersistParameters,
         )
@@ -132,13 +140,9 @@ object Shooter : SubsystemBase() {
     override fun periodic() {
         SmartDashboard.putNumber("Shooter/TopMotorRPM", motorTop.encoder.velocity)
         SmartDashboard.putNumber("Shooter/BottomMotorRPM", motorBottom.encoder.velocity)
-        SmartDashboard.putNumber("Gate/Current", gateMotor.outputCurrent)
-        // mechanism2d.setBackgroundColor(Color8Bit(255,172,28))
-//            mechanism2d
-//                .getRoot("Test", 1.0, 1.0)
-//                .append<MechanismLigament2d>(
-//                    MechanismLigament2d("Babber", 1.0, 90.0, 2.0, Color8Bit(255, 172, 28))
-//                )
-//            SmartDashboard.putData("Mech2D", mechanism2d)
+        /*mechanism2d
+            .getRoot("Carrot1Pos", 0.0, 0.0)
+            .setPosition(5 + 4 * kotlin.math.sin(Timer.getFPGATimestamp() / 2), 1.0)
+        SmartDashboard.putData("Mech2D", mechanism2d)*/
     }
 }
