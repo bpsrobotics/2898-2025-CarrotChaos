@@ -3,13 +3,18 @@ package frc.robot.subsystems
 import beaverlib.controls.PIDConstants
 import beaverlib.controls.SimpleMotorFeedForwardConstants
 import beaverlib.utils.Units.Angular.AngularVelocity
+import beaverlib.utils.Units.Angular.RPM
 import beaverlib.utils.Units.Angular.asRPM
+import beaverlib.utils.Units.Linear.inches
 import com.revrobotics.spark.SparkBase
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import com.revrobotics.spark.config.SparkBaseConfig
 import com.revrobotics.spark.config.SparkMaxConfig
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.util.Color8Bit
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap
 import frc.robot.commands.shooter.StopShooter
@@ -20,20 +25,33 @@ object Shooter : SubsystemBase() {
     private val motorTop = SparkMax(RobotMap.ShooterTopId, SparkLowLevel.MotorType.kBrushless)
     private val motorBottom = SparkMax(RobotMap.ShooterBotId, SparkLowLevel.MotorType.kBrushless)
     private val gateMotor = SparkMax(RobotMap.FeederId, SparkLowLevel.MotorType.kBrushless)
+    private val mechanism2d: Mechanism2d = Mechanism2d(3.0, 3.0)
 
     private val shooterConfig: SparkMaxConfig = SparkMaxConfig()
     private val gateConfig: SparkMaxConfig = SparkMaxConfig()
 
     object Constants {
-        //    val WheelRadius = 4.inches
+        val WheelRadius = 6.inches // todo
         val pidConstants = PIDConstants(0.1, 0.0, 0.0)
         val ffConstants = SimpleMotorFeedForwardConstants(0.0, 0.0, 0.0)
     }
 
     val topMotorPIDFF: PIDFF = PIDFF(Constants.pidConstants, Constants.ffConstants)
     val bottomMotorPIDFF: PIDFF = PIDFF(Constants.pidConstants, Constants.ffConstants)
+    val gateSpeed
+        get() = gateMotor.encoder.velocity.RPM
+
+    val topMotorSpeed
+        get() = motorTop.encoder.velocity.RPM
+
+    val bottomMotorSpeed
+        get() = motorBottom.encoder.velocity.RPM
+
+    val shooterSpeed
+        get() = (topMotorSpeed + bottomMotorSpeed) / 2.0
 
     init {
+
         // Intake motor initialisation stuff
         shooterConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(20)
 
@@ -49,9 +67,9 @@ object Shooter : SubsystemBase() {
         )
 
         // Intake motor initialisation stuff
-        gateConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(20)
+        gateConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(40)
         gateMotor.configure(
-            gateConfig,
+            gateConfig.inverted(true),
             SparkBase.ResetMode.kResetSafeParameters,
             SparkBase.PersistMode.kPersistParameters,
         )
@@ -78,10 +96,10 @@ object Shooter : SubsystemBase() {
     }
 
     /** Sets both shooter motors to stop running */
-    //  fun stopShooter() {
-    //    motorTop.stopMotor()
-    //    motorBottom.stopMotor()
-    //  }
+    fun stopShooter() {
+        motorTop.stopMotor()
+        motorBottom.stopMotor()
+    }
 
     /** Sets the gate motor to stop running */
     fun stopGate() {
@@ -114,5 +132,13 @@ object Shooter : SubsystemBase() {
     override fun periodic() {
         SmartDashboard.putNumber("Shooter/TopMotorRPM", motorTop.encoder.velocity)
         SmartDashboard.putNumber("Shooter/BottomMotorRPM", motorBottom.encoder.velocity)
+        SmartDashboard.putNumber("Gate/Current", gateMotor.outputCurrent)
+        // mechanism2d.setBackgroundColor(Color8Bit(255,172,28))
+//            mechanism2d
+//                .getRoot("Test", 1.0, 1.0)
+//                .append<MechanismLigament2d>(
+//                    MechanismLigament2d("Babber", 1.0, 90.0, 2.0, Color8Bit(255, 172, 28))
+//                )
+//            SmartDashboard.putData("Mech2D", mechanism2d)
     }
 }
