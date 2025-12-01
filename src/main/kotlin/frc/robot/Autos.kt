@@ -6,11 +6,7 @@ import beaverlib.utils.Units.Angular.AngularAcceleration
 import beaverlib.utils.Units.Angular.AngularVelocity
 import beaverlib.utils.Units.Angular.radiansPerSecond
 import beaverlib.utils.Units.Angular.radiansPerSecondSquared
-import beaverlib.utils.Units.Linear.Acceleration
-import beaverlib.utils.Units.Linear.VelocityUnit
-import beaverlib.utils.Units.Linear.inches
-import beaverlib.utils.Units.Linear.metersPerSecond
-import beaverlib.utils.Units.Linear.metersPerSecondSquared
+import beaverlib.utils.Units.Linear.*
 import beaverlib.utils.Units.lb
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.config.ModuleConfig
@@ -26,7 +22,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Drivetrain.driveConsumer
 import frc.robot.subsystems.Drivetrain.getAlliance
-import frc.robot.subsystems.Vision
 import kotlin.math.PI
 
 object Autos {
@@ -153,10 +148,4 @@ object Autos {
         path.preventFlipping = true
         return path
     }
-    fun test() {
-        Vision.cameras.get(0).results.forEach { photonPipelineResult -> photonPipelineResult. }
-        Vision.cameras[0].cam.allUnreadResults[0]
-        Vision.cameras[0].cam.
-    }
-
 }
