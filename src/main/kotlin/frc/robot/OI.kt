@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.Trigger
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import frc.robot.OI.process
 import frc.robot.commands.IntakeForTimeOpenLoop
 import frc.robot.commands.OI.NavXReset
@@ -14,7 +15,7 @@ import frc.robot.commands.OI.Rumble
 import frc.robot.commands.OutakeRobot
 import frc.robot.commands.RunAllRobotForTime
 import frc.robot.commands.ShootForTimeOpenLoop
-import frc.robot.commands.intake.RunIntakeForTime
+import frc.robot.subsystems.Shooter
 import kotlin.math.pow
 import kotlin.math.sign
 
@@ -59,6 +60,12 @@ object OI : SubsystemBase() {
             ShootForTimeOpenLoop(0.5, 0.6, 0.6, 0.4))
         operatorTrigger.and(highHatBack).whileTrue(
             RunAllRobotForTime(0.6, 0.5, 1.0, 0.6, 0.4))
+
+        driverController.y().whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward))
+        driverController.a().whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
+        driverController.x().whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward))
+        driverController.b().whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse))
+
 
     }
 
