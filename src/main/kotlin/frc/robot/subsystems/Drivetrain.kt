@@ -154,70 +154,23 @@ object Drivetrain : SubsystemBase() {
         swerveDrive.modules.forEach { it.driveMotor.voltage = volts }
     }
 
-    /**
-     * Get a SysIdRoutine for the drive motors.
-     *
-     * @return A custom SysIdRoutine for the drive motors.
-     * @see SysIdRoutine
-     */
-    fun getDriveSysIDRoutine(): SysIdRoutine {
-        return SysIdRoutine(
-            SysIdRoutine.Config(),
-            SysIdRoutine.Mechanism(
-                { volts: Voltage ->
-                    swerveDrive.modules.forEach { it.driveMotor.voltage = volts.`in`(Volt) }
-                },
-                { log: SysIdRoutineLog -> swerveDrive.modules.forEach { logDriveMotor(it, log) } },
-                this,
-            ),
-        )
-    }
 
-    /**
-     * Generate a full command to SysID the drive motors
-     *
-     * @return A command that SysIDs the drive motors.
-     */
-    fun getDriveSysIDCommand(): Command {
-        return SequentialCommandGroup(
-            getDriveSysIDRoutine().dynamic(SysIdRoutine.Direction.kForward),
-            WaitCommand(1.0),
-            getDriveSysIDRoutine().dynamic(SysIdRoutine.Direction.kReverse),
-            WaitCommand(1.0),
-            getDriveSysIDRoutine().quasistatic(SysIdRoutine.Direction.kForward),
-            WaitCommand(1.0),
-            getDriveSysIDRoutine().quasistatic(SysIdRoutine.Direction.kReverse),
-        )
-    }
 
-    /**
-     * Logging function to easily log for SysID.
-     *
-     * @param module The module to log.
-     * @param log The SysIdRoutineLog to log to.
-     * @see SysIdRoutineLog
-     */
-    fun logDriveMotor(module: SwerveModule, log: SysIdRoutineLog) {
-        log.motor(module.configuration.name)
-            .voltage(Volt.of(module.driveMotor.voltage))
-            .linearPosition(Meters.of(module.driveMotor.position))
-            .linearVelocity(MetersPerSecond.of(module.driveMotor.velocity))
-    }
 
     /**
      * Return SysID command for drive motors from YAGSL
      *
      * @return A command that SysIDs the drive motors.
      */
-    //    fun sysIdDriveMotor(): Command? {
-    //        return SwerveDriveTest.generateSysIdCommand(
-    //            SwerveDriveTest.setDriveSysIdRoutine(
-    //                SysIdRoutine.Config(),
-    //                this,
-    //                swerveDrive, 12.0),
-    //            3.0, 5.0, 3.0
-    //        )
-    //    }
+        fun sysIdDriveMotor(): Command? {
+            return SwerveDriveTest.generateSysIdCommand(
+                SwerveDriveTest.setDriveSysIdRoutine(
+                    SysIdRoutine.Config(),
+                    this,
+                    swerveDrive, 12.0, true),
+                3.0, 5.0, 3.0
+            )
+        }
 
     /**
      * Return SysID command for angle motors from YAGSL
