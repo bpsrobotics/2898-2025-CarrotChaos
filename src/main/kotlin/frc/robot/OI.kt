@@ -15,6 +15,7 @@ import frc.robot.commands.OI.Rumble
 import frc.robot.commands.OutakeRobot
 import frc.robot.commands.RunAllRobotForTime
 import frc.robot.commands.ShootForTimeOpenLoop
+import frc.robot.subsystems.Drivetrain.sysIdDriveMotor
 import frc.robot.subsystems.Shooter
 import kotlin.math.pow
 import kotlin.math.sign
@@ -65,6 +66,10 @@ object OI : SubsystemBase() {
         driverController.a().whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
         driverController.x().whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward))
         driverController.b().whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse))
+
+//        driverController.y().whileTrue(sysIdDriveMotor())
+//        driverController.a().whileTrue(sysIdAngleMotorCommand())
+
 
 
     }
