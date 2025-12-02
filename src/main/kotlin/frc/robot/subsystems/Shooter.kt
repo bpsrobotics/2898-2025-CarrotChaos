@@ -36,6 +36,7 @@ object Shooter : SubsystemBase() {
         val WheelRadius = 6.inches // todo
         val pidConstants = PIDConstants(0.1, 0.0, 0.0)
         val ffConstants = SimpleMotorFeedForwardConstants(0.0, 0.0, 0.0)
+        const val GEAR_RATIO = 3.0 / 2.0
     }
 
     val topMotorPIDFF: PIDFF = PIDFF(Constants.pidConstants, Constants.ffConstants)
@@ -55,6 +56,7 @@ object Shooter : SubsystemBase() {
     // val Carrot1 = MechanismLigament2d("Carrot1", 2.5, 0.0, 20.0, Color8Bit(255, 172, 28))
 
     init {
+        motorTop
         /*mechanism2d.getRoot("Carrot1Pos", 1.0, 1.0).append<MechanismLigament2d>(Carrot1)
         mechanism2d
             .getRoot("Base", 1.0, 0.4)
@@ -63,7 +65,12 @@ object Shooter : SubsystemBase() {
             )*/
 
         // Intake motor initialisation stuff
-        shooterConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(20)
+        shooterConfig
+            .idleMode(SparkBaseConfig.IdleMode.kBrake)
+            .smartCurrentLimit(20)
+            .encoder
+            .positionConversionFactor(Constants.GEAR_RATIO)
+            .velocityConversionFactor(Constants.GEAR_RATIO)
 
         motorTop.configure(
             shooterConfig,
