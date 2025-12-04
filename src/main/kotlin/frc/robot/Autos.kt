@@ -8,6 +8,7 @@ import beaverlib.utils.Units.Angular.radiansPerSecond
 import beaverlib.utils.Units.Angular.radiansPerSecondSquared
 import beaverlib.utils.Units.Linear.*
 import beaverlib.utils.Units.lb
+import beaverlib.utils.geometry.Vector2
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.config.ModuleConfig
 import com.pathplanner.lib.config.RobotConfig
@@ -19,6 +20,8 @@ import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.trajectory.TrapezoidProfile
+import frc.engine.utils.Polynomial
+import frc.robot.engine.FieldMap
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Drivetrain.driveConsumer
 import frc.robot.subsystems.Drivetrain.getAlliance
@@ -26,6 +29,8 @@ import kotlin.math.PI
 
 object Autos {
     object Constants {
+        val shootingPolynomial = Polynomial()
+
         val Robot_Config =
             RobotConfig(
                 (120.0).lb.asKilograms,
@@ -55,6 +60,13 @@ object Autos {
                 MaxAngularSpeedRadiansPerSecondSquared,
             )
     }
+
+    val autoShooterSpeed
+        get() = {
+            Constants.shootingPolynomial.calculate(
+                Vector2(Drivetrain.pose).distance(FieldMap.teamFeederStation.center)
+            )
+        }
 
     init {
         AutoBuilder.configure(

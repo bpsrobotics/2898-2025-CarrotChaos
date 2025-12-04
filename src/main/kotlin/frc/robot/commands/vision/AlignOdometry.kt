@@ -14,7 +14,6 @@ import kotlin.math.sign
 
 // 3, 3.2
 class AlignOdometry(
-    val apriltagId: Int,
     var targetPose2d: Pose2d = Pose2d(3.1, 4.24, Rotation2d(0.0)),
     val maxSpeed: Double = 1.5,
     val maxRotSpeed: Double = 1.0,
