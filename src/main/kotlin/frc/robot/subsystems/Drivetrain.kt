@@ -155,8 +155,6 @@ object Drivetrain : SubsystemBase() {
     }
 
 
-
-
     /**
      * Return SysID command for drive motors from YAGSL
      *
@@ -358,22 +356,5 @@ object Drivetrain : SubsystemBase() {
             VecBuilder.fill(stdDevX, stdDevY, stdDevTheta)
         )
     }
-
-    /**
-     * PID Controller for the heading of the robot. Currently not used, as feedforward is a much
-     * better solution to fix drift.
-     */
-    val HeadingPID: PIDController = PIDController(0.005, 0.01, 0.0)
-
-    /**
-     * Calculate the heading PID for the robot.
-     *
-     * @param measurement The current heading of the robot.
-     * @param setpoint The desired heading of the robot.
-     * @return The calculated output of the PID controller.
-     */
-    @Deprecated("Use feedforward instead")
-    fun calculateHeadingPID(measurement: Double, setpoint: Double): Double {
-        return HeadingPID.calculate(measurement, setpoint)
-    }
 }
+
