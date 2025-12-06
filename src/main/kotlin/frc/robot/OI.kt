@@ -3,6 +3,7 @@ package frc.robot
 import beaverlib.utils.geometry.Vector2
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.GenericHID
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
@@ -15,7 +16,8 @@ import frc.robot.commands.OI.Rumble
 import frc.robot.commands.OutakeRobot
 import frc.robot.commands.RunAllRobotForTime
 import frc.robot.commands.ShootForTimeOpenLoop
-import frc.robot.subsystems.Drivetrain.sysIdDriveMotor
+import frc.robot.commands.shooter.TuneShoot
+import frc.robot.commands.shooter.TuneShooterSpinup
 import frc.robot.subsystems.Shooter
 import kotlin.math.pow
 import kotlin.math.sign
@@ -51,26 +53,26 @@ object OI : SubsystemBase() {
     fun configureBindings() {
         resetGyro.whileTrue(navXResetCommand)
 
-        highHatBack.and(operatorTrigger.negate()).whileTrue(
-            IntakeForTimeOpenLoop(1.0, 0.6, 0.05)) // Intake
-        highHatForward.whileTrue(
-            OutakeRobot(0.6, 0.1, 0.1, 0.1)
-        ) // Outtake
+        highHatBack
+            .and(operatorTrigger.negate())
+            .whileTrue(IntakeForTimeOpenLoop(1.0, 0.6, 0.05)) // Intake
+        highHatForward.whileTrue(OutakeRobot(0.6, 0.1, 0.1, 0.1)) // Outtake
 
-        operatorTrigger.and(highHatBack.negate()).whileTrue(
-            ShootForTimeOpenLoop(0.5, 0.6, 0.6, 0.4))
-        operatorTrigger.and(highHatBack).whileTrue(
-            RunAllRobotForTime(0.6, 0.5, 1.0, 0.6, 0.4))
+        operatorTrigger
+            .and(highHatBack.negate())
+            .whileTrue(ShootForTimeOpenLoop(0.5, 0.6, 0.6, 0.4))
+        operatorTrigger.and(highHatBack).whileTrue(RunAllRobotForTime(0.6, 0.5, 1.0, 0.6, 0.4))
 
         driverController.y().whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward))
         driverController.a().whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
         driverController.x().whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward))
         driverController.b().whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse))
+        operatorController
+            .button(3)
+            .whileTrue(SequentialCommandGroup(TuneShooterSpinup(), TuneShoot()))
 
-//        driverController.y().whileTrue(sysIdDriveMotor())
-//        driverController.a().whileTrue(sysIdAngleMotorCommand())
-
-
+        //        driverController.y().whileTrue(sysIdDriveMotor())
+        //        driverController.a().whileTrue(sysIdAngleMotorCommand())
 
     }
 
