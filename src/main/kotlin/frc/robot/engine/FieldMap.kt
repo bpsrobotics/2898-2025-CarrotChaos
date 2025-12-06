@@ -1,10 +1,12 @@
 package frc.robot.engine
 
+import beaverlib.utils.Units.Linear.DistanceUnit
 import beaverlib.utils.Units.Linear.feet
 import beaverlib.utils.Units.Linear.inches
 import beaverlib.utils.geometry.Rectangle
 import beaverlib.utils.geometry.Vector2
 import edu.wpi.first.wpilibj.DriverStation
+import kotlin.math.sqrt
 
 interface FeederStation {
     val center: Vector2
@@ -21,6 +23,10 @@ object FieldMap {
     val FieldHeight = 26.feet + 4.inches
     val FeederWidth = 20.inches
     val ZooWidth = 96.inches
+
+    fun zooSafeRadius(safeDistance: DistanceUnit): DistanceUnit {
+        return (ZooWidth / 2) * sqrt(2.0) + safeDistance
+    }
 
     object BlueFeederStation : FeederStation {
         override val center =
