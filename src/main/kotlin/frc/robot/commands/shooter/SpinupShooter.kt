@@ -11,13 +11,14 @@ import frc.robot.subsystems.Shooter
  * @param bottomSpeed Desired speed of the bottomMotor
  * @param topSpeed Desired speed of the topMotor
  */
-class SpinupShooter(val bottomSpeed: AngularVelocity, val topSpeed: AngularVelocity) : Command() {
+class SpinupShooter(val bottomSpeed: () -> AngularVelocity, val topSpeed: () -> AngularVelocity) : Command() {
+
     init {
         addRequirements(Shooter)
     }
 
     override fun initialize() {
-        Shooter.setSpeeds(bottomSpeed, topSpeed)
+        Shooter.setSpeeds(bottomSpeed(), topSpeed())
         Shooter.stopGate()
     }
 
@@ -26,7 +27,7 @@ class SpinupShooter(val bottomSpeed: AngularVelocity, val topSpeed: AngularVeloc
     }
 
     override fun isFinished(): Boolean {
-        return Shooter.isAtSpeed()
+        return Shooter.isAtSpeed(100.0)
     }
 
     override fun end(interrupted: Boolean) {
