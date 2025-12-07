@@ -20,6 +20,7 @@ import frc.robot.engine.BeaverSysIDRoutine
 import frc.robot.engine.PIDFF
 import frc.robot.engine.SysidMotor
 import frc.robot.subsystems.Shooter.setSpeeds
+import kotlin.math.absoluteValue
 
 object Shooter : SubsystemBase() {
     private val motorTop = SparkMax(RobotMap.ShooterTopId, SparkLowLevel.MotorType.kBrushless)
@@ -32,13 +33,16 @@ object Shooter : SubsystemBase() {
 
     object Constants {
         val WheelRadius = 6.inches // todo
-        val pidConstants = PIDConstants(0.1, 0.0, 0.0)
-        val ffConstants = SimpleMotorFeedForwardConstants(0.0, 0.0, 0.0)
+        val botPIDConstants = PIDConstants(0.0015, 0.0, 0.0001)
+        val botFFConstants = SimpleMotorFeedForwardConstants(0.20495, 0.0013913, 0.00014398)
+
+        val topPIDConstants = PIDConstants(0.001, 0.0, 0.0001)
+        val topFFConstants = SimpleMotorFeedForwardConstants(0.19116, 0.0013576, 0.00011935)
         const val GEAR_RATIO = 3.0 / 2.0
     }
 
-    val topMotorPIDFF: PIDFF = PIDFF(Constants.pidConstants, Constants.ffConstants)
-    val bottomMotorPIDFF: PIDFF = PIDFF(Constants.pidConstants, Constants.ffConstants)
+    val topMotorPIDFF: PIDFF = PIDFF(Constants.topPIDConstants, Constants.topFFConstants)
+    val bottomMotorPIDFF: PIDFF = PIDFF(Constants.botPIDConstants, Constants.botFFConstants)
     val gateSpeed
         get() = gateMotor.encoder.velocity.RPM
 
@@ -64,7 +68,7 @@ object Shooter : SubsystemBase() {
 
         // Intake motor initialisation stuff
         shooterConfig
-            .idleMode(SparkBaseConfig.IdleMode.kBrake)
+            .idleMode(SparkBaseConfig.IdleMode.kCoast)
             .smartCurrentLimit(20)
             .encoder
             .positionConversionFactor(Constants.GEAR_RATIO)
@@ -82,7 +86,7 @@ object Shooter : SubsystemBase() {
         )
 
         // Intake motor initialisation stuff
-        gateConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(20)
+        gateConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(20).inverted(true)
         gateMotor.configure(
             gateConfig,
             SparkBase.ResetMode.kResetSafeParameters,
@@ -147,8 +151,9 @@ object Shooter : SubsystemBase() {
     }
 
     /** Returns true if both PIDs [PIDFF.atSetpoint] returns true. */
-    fun isAtSpeed(): Boolean {
-        return topMotorPIDFF.atSetpoint() && bottomMotorPIDFF.atSetpoint()
+    fun isAtSpeed(range: Double): Boolean {
+        return (motorBottom.encoder.velocity - topMotorPIDFF.setpoint).absoluteValue < range
+                && (motorTop.encoder.velocity - topMotorPIDFF.setpoint).absoluteValue < range
     }
 
     /** Put the top and bottom motor encoder RPMS to [SmartDashboard] */

@@ -1,5 +1,6 @@
 package frc.robot.commands.shooter
 
+import beaverlib.utils.Units.Angular.AngularVelocity
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.Shooter
@@ -11,7 +12,7 @@ import frc.robot.subsystems.Shooter
  * @param gatePercent the speed to run the [Shooter.gateMotor] at
  * @param time The time to run the shooter for (indefinite if negative)
  */
-class ShootForTime(val gatePercent: Double = 0.1, val time: Double = -1.0) : Command() {
+class ShootForTime(val shooterSpeed : () -> AngularVelocity, val gatePercent: Double = 0.1, val time: Double = -1.0) : Command() {
     init {
         addRequirements(Shooter)
     }
@@ -25,6 +26,7 @@ class ShootForTime(val gatePercent: Double = 0.1, val time: Double = -1.0) : Com
     }
 
     override fun execute() {
+        Shooter.setSpeed(shooterSpeed())
         Shooter.runPIDFF()
     }
 

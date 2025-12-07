@@ -18,7 +18,7 @@ object Intake : SubsystemBase() {
 
     init {
         // Intake motor initialisation stuff
-        IntakeConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(35).inverted(true)
+        IntakeConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(40).inverted(true)
 
         intakeMotor.configure(
             IntakeConfig,
