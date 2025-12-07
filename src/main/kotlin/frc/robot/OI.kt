@@ -76,14 +76,6 @@ object OI : SubsystemBase() {
             0.45, 0.4, 0.4))
 
         //driverController.x().whileTrue(Shooter.routine.fullSysID())
-        //driverController.x().whileTrue(TuneShooterSpinup)
-        //driverController.y().whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward))
-        //driverController.a().whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
-        //driverController.x().whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward))
-        //driverController.b().whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse))
-        //operatorController
-        //    .button(3)
-        //    .whileTrue(SequentialCommandGroup(TuneShooterSpinup(), TuneShoot()))
 
                 driverController.y().whileTrue(sysIdDriveMotor())
                 driverController.a().whileTrue(
