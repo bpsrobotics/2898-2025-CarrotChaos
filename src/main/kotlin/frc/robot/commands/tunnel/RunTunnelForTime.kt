@@ -1,20 +1,20 @@
-package frc.robot.commands.intake
+package frc.robot.commands.tunnel
 
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.subsystems.Intake
+import frc.robot.subsystems.Tunnel
 
-class RunIntakeForTime(val percent: Double, val time: Double = -1.0) : Command() {
+class RunTunnelForTime(val percent: Double, val time: Double = -1.0) : Command() {
     val isInfinite = time < 0
     val timer = Timer()
 
     init {
-        addRequirements(Intake)
+        addRequirements(Tunnel)
     }
 
     override fun initialize() {
         if (!isInfinite) timer.restart()
-        Intake.runMotor(percent)
+        Tunnel.runAtPercent(percent)
     }
 
     override fun isFinished(): Boolean {
@@ -22,6 +22,6 @@ class RunIntakeForTime(val percent: Double, val time: Double = -1.0) : Command()
     }
 
     override fun end(interrupted: Boolean) {
-        Intake.runMotor(0.0)
+        Tunnel.runAtPercent(0.0)
     }
 }

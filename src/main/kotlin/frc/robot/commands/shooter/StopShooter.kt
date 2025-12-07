@@ -1,16 +1,16 @@
-package frc.robot.commands.intake
+package frc.robot.commands.shooter
 
 import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.subsystems.Intake
+import frc.robot.subsystems.Shooter
 
 /** Command that stops the intake motor */
-class StopIntake() : Command() {
+class StopShooter() : Command() {
     init {
-        addRequirements(Intake)
+        addRequirements(Shooter)
     }
 
     override fun execute() {
-        Intake.stopMotor()
+        Shooter.stop()
     }
 
     override fun isFinished(): Boolean {

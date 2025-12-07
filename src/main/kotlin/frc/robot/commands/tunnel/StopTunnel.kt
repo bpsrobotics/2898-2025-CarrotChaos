@@ -1,16 +1,16 @@
-package frc.robot.commands.intake
+package frc.robot.commands.tunnel
 
 import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.subsystems.Intake
+import frc.robot.subsystems.Tunnel
 
 /** Command that stops the intake motor */
-class StopIntake() : Command() {
+class StopTunnel() : Command() {
     init {
-        addRequirements(Intake)
+        addRequirements(Tunnel)
     }
 
     override fun execute() {
-        Intake.stopMotor()
+        Tunnel.stop()
     }
 
     override fun isFinished(): Boolean {
