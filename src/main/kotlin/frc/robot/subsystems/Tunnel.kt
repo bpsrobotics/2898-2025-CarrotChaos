@@ -1,21 +1,19 @@
 package frc.robot.subsystems
 
-import beaverlib.utils.Units.Angular.AngularVelocity
-import beaverlib.utils.Units.Angular.radians
 import beaverlib.utils.Units.Angular.rotations
 import beaverlib.utils.Units.Linear.DistanceUnit
-import beaverlib.utils.Units.Linear.VelocityUnit
 import beaverlib.utils.Units.Linear.inches
+import beaverlib.utils.Units.Time
 import com.revrobotics.spark.SparkBase
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import com.revrobotics.spark.config.SparkBaseConfig
 import com.revrobotics.spark.config.SparkMaxConfig
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap
 import frc.robot.RobotMap.FeederSharkId
 import frc.robot.RobotMap.IntakeSharkId
-import frc.robot.commands.tunnel.StopTunnel
 import frc.robot.engine.LaserSharkObjectSensor
 import frc.robot.engine.ObjectSensor
 
@@ -76,29 +74,30 @@ object Tunnel : SubsystemBase() {
             SparkBase.ResetMode.kResetSafeParameters,
             SparkBase.PersistMode.kPersistParameters,
         )
-        defaultCommand = StopTunnel()
+        defaultCommand = stopCommand()
     }
 
-    fun runAtPercent(percent: Double) {
-        motor.set(percent)
+    fun runAtPower(power: Double) {
+        motor.set(power)
     }
 
     fun stop() {
         motor.stopMotor()
     }
 
-    fun runAtSpeed(speed: AngularVelocity) {
-        // todo
-    }
-
-    fun runAtSpeed(speed: VelocityUnit) {
-        runAtSpeed((speed / Constants.Diameter) * 1.radians)
-    }
-
     override fun periodic() {
         CarrotCounter.update()
-//        if (intakeDetector.justEntered() && !CarrotCounter.carrotInSensorRange())
-//            CarrotCounter.carrots.add(Carrot(beltPosition))
-//        if (feederDetector.justEntered()) CarrotCounter.shootCarrot()
     }
+
+    /**
+     * Runs the Tunnel at the specified power for the specified time. If time is null, this will run
+     * indefinitely until canceled
+     */
+    fun runAtPowerCommand(power: Double, time: Time? = null): Command {
+        time ?: return this.runEnd({ runAtPower(power) }, { stop() })
+        return this.runEnd({ runAtPower(power) }, { stop() }).withTimeout(time.asSeconds)
+    }
+
+    /** Command that stops the Tunnel motor */
+    fun stopCommand(): Command = this.run { stop() }
 }

@@ -1,22 +1,21 @@
 package frc.robot
 
+import beaverlib.utils.Units.Angular.RPM
 import beaverlib.utils.geometry.Vector2
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.GenericHID
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.Trigger
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import frc.robot.OI.process
-import frc.robot.commands.IntakeForTimeOpenLoop
+import frc.robot.commands.DoOpenloopIntake
+import frc.robot.commands.DoOutakeFullRobot
+import frc.robot.commands.DoShoot
+import frc.robot.commands.DoShootIntake
 import frc.robot.commands.OI.NavXReset
 import frc.robot.commands.OI.Rumble
-import frc.robot.commands.OutakeRobot
-import frc.robot.commands.RunAllRobotForTime
-import frc.robot.commands.ShootForTimeOpenLoop
-import frc.robot.subsystems.Drivetrain.sysIdDriveMotor
-import frc.robot.subsystems.Shooter
 import kotlin.math.pow
 import kotlin.math.sign
 
@@ -50,27 +49,32 @@ object OI : SubsystemBase() {
      */
     fun configureBindings() {
         resetGyro.whileTrue(navXResetCommand)
+        // If high hat is moved towards the player, and NOT shooting, run intake
+        highHatBack.and(operatorTrigger.negate()).whileTrue(DoOpenloopIntake())
 
-        highHatBack.and(operatorTrigger.negate()).whileTrue(
-            IntakeForTimeOpenLoop(1.0, 0.6, 0.05)) // Intake
-        highHatForward.whileTrue(
-            OutakeRobot(0.6, 0.1, 0.1, 0.1)
-        ) // Outtake
+        // If high hat is moved away from the player, run all subsystems in reverse to dislodge
+        // stuck carrots
+        highHatForward.whileTrue(DoOutakeFullRobot()) // Outtake
 
-        operatorTrigger.and(highHatBack.negate()).whileTrue(
-            ShootForTimeOpenLoop(0.5, 0.6, 0.6, 0.4))
-        operatorTrigger.and(highHatBack).whileTrue(
-            RunAllRobotForTime(0.6, 0.5, 1.0, 0.6, 0.4))
+        SmartDashboard.putNumber("Shooter/DesiredShooterRPM", 0.0)
 
-        driverController.y().whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward))
-        driverController.a().whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
-        driverController.x().whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward))
-        driverController.b().whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse))
+        // If operator trigger is pressed, and not intaking, run the shoot command
+        operatorTrigger
+            .and(highHatBack.negate())
+            .whileTrue(DoShoot({ SmartDashboard.getNumber("Shooter/DesiredShooterRPM", 0.0).RPM }))
 
-//        driverController.y().whileTrue(sysIdDriveMotor())
-//        driverController.a().whileTrue(sysIdAngleMotorCommand())
+        // If operator trigger is pressed, and ALSO intaking, run the shoot and intake command
+        operatorTrigger
+            .and(highHatBack)
+            .whileTrue(
+                DoShootIntake({ SmartDashboard.getNumber("Shooter/DesiredShooterRPM", 0.0).RPM })
+            )
 
+        //        driverController.x().whileTrue(Shooter.routine.fullSysID())
 
+        //        driverController.y().whileTrue(sysIdDriveMotor())
+        //        driverController.a().whileTrue(
+        //            sysIdAngleMotorCommand())
 
     }
 
