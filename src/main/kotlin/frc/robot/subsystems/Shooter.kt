@@ -5,17 +5,17 @@ import beaverlib.controls.SimpleMotorFeedForwardConstants
 import beaverlib.utils.Units.Angular.AngularVelocity
 import beaverlib.utils.Units.Angular.RPM
 import beaverlib.utils.Units.Angular.asRPM
-import beaverlib.utils.Units.Linear.inches
+import beaverlib.utils.Units.Time
+import beaverlib.utils.Units.seconds
 import com.revrobotics.spark.SparkBase
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import com.revrobotics.spark.config.SparkBaseConfig
 import com.revrobotics.spark.config.SparkMaxConfig
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap
-import frc.robot.commands.shooter.StopShooter
 import frc.robot.engine.BeaverSysIDRoutine
 import frc.robot.engine.PIDFF
 import frc.robot.engine.SysidMotor
@@ -23,16 +23,14 @@ import frc.robot.subsystems.Shooter.setSpeeds
 import kotlin.math.absoluteValue
 
 object Shooter : SubsystemBase() {
-    private val motorTop = SparkMax(RobotMap.ShooterTopId, SparkLowLevel.MotorType.kBrushless)
-    private val motorBottom = SparkMax(RobotMap.ShooterBotId, SparkLowLevel.MotorType.kBrushless)
-    private val gateMotor = SparkMax(RobotMap.FeederId, SparkLowLevel.MotorType.kBrushless)
-    private val mechanism2d: Mechanism2d = Mechanism2d(3.0, 3.0)
+    private val topMotor = SparkMax(RobotMap.ShooterTopId, SparkLowLevel.MotorType.kBrushless)
+    private val topEncoder = topMotor.encoder
+    private val botMotor = SparkMax(RobotMap.ShooterBotId, SparkLowLevel.MotorType.kBrushless)
+    private val botEncoder = botMotor.encoder
 
     private val shooterConfig: SparkMaxConfig = SparkMaxConfig()
-    private val gateConfig: SparkMaxConfig = SparkMaxConfig()
 
     object Constants {
-        val WheelRadius = 6.inches // todo
         val botPIDConstants = PIDConstants(0.0015, 0.0, 0.0001)
         val botFFConstants = SimpleMotorFeedForwardConstants(0.20495, 0.0013913, 0.00014398)
 
@@ -42,30 +40,20 @@ object Shooter : SubsystemBase() {
     }
 
     val topMotorPIDFF: PIDFF = PIDFF(Constants.topPIDConstants, Constants.topFFConstants)
-    val bottomMotorPIDFF: PIDFF = PIDFF(Constants.botPIDConstants, Constants.botFFConstants)
-    val gateSpeed
-        get() = gateMotor.encoder.velocity.RPM
+    val botMotorPIDFF: PIDFF = PIDFF(Constants.botPIDConstants, Constants.botFFConstants)
 
     val topMotorSpeed
-        get() = motorTop.encoder.velocity.RPM
+        get() = topEncoder.velocity.RPM
 
     val bottomMotorSpeed
-        get() = motorBottom.encoder.velocity.RPM
+        get() = botEncoder.velocity.RPM
 
-    val shooterSpeed
+    val speed
         get() = (topMotorSpeed + bottomMotorSpeed) / 2.0
 
     // val Carrot1 = MechanismLigament2d("Carrot1", 2.5, 0.0, 20.0, Color8Bit(255, 172, 28))
 
     init {
-        motorTop
-        /*mechanism2d.getRoot("Carrot1Pos", 1.0, 1.0).append<MechanismLigament2d>(Carrot1)
-        mechanism2d
-            .getRoot("Base", 1.0, 0.4)
-            .append<MechanismLigament2d>(
-                MechanismLigament2d("Base", 10.0, 0.0, 20.0, Color8Bit(0, 0, 0))
-            )*/
-
         // Intake motor initialisation stuff
         shooterConfig
             .idleMode(SparkBaseConfig.IdleMode.kCoast)
@@ -74,95 +62,116 @@ object Shooter : SubsystemBase() {
             .positionConversionFactor(Constants.GEAR_RATIO)
             .velocityConversionFactor(Constants.GEAR_RATIO)
 
-        motorTop.configure(
+        topMotor.configure(
             shooterConfig,
             SparkBase.ResetMode.kResetSafeParameters,
             SparkBase.PersistMode.kPersistParameters,
         )
-        motorBottom.configure(
+        botMotor.configure(
             shooterConfig.inverted(true),
             SparkBase.ResetMode.kResetSafeParameters,
             SparkBase.PersistMode.kPersistParameters,
         )
 
-        // Intake motor initialisation stuff
-        gateConfig.idleMode(SparkBaseConfig.IdleMode.kBrake).smartCurrentLimit(20).inverted(true)
-        gateMotor.configure(
-            gateConfig,
-            SparkBase.ResetMode.kResetSafeParameters,
-            SparkBase.PersistMode.kPersistParameters,
-        )
-
-        defaultCommand = StopShooter()
+        defaultCommand = stopCommand()
     }
 
     // Creates a SysIdRoutine
     var routine =
         BeaverSysIDRoutine(
             this,
-            SysidMotor("shooter-bottom", motorBottom),
-            SysidMotor("shooter-top", motorTop),
+            SysidMotor("shooter-bottom", botMotor),
+            SysidMotor("shooter-top", topMotor),
         )
 
     /** Runs both shooter motors using openloop at the given [percent] */
-    fun runAtPercent(percent: Double) {
-        motorTop.set(percent)
-        motorBottom.set(percent)
-    }
-
-    /** Runs the gate motor using openloop at the given [percent] */
-    fun runGateAtPercent(percent: Double) {
-        gateMotor.set(percent)
+    fun runAtPower(percent: Double) {
+        topMotor.set(percent)
+        botMotor.set(percent)
     }
 
     /** Stops all motors (top, bottom, and gate) from running */
     fun stop() {
-        motorTop.stopMotor()
-        motorBottom.stopMotor()
-        gateMotor.stopMotor()
-    }
-
-    /** Sets both shooter motors to stop running */
-    fun stopShooter() {
-        motorTop.stopMotor()
-        motorBottom.stopMotor()
-    }
-
-    /** Sets the gate motor to stop running */
-    fun stopGate() {
-        gateMotor.stopMotor()
-    }
-
-    /** Sets the PIDFF setpoint for both motors to [speed] */
-    fun setSpeed(speed: AngularVelocity) {
-        setSpeeds(speed, speed)
+        topMotor.stopMotor()
+        botMotor.stopMotor()
     }
 
     /** Sets the PIDFF setpoint for each motor to [topSpeed] and [bottomSpeed] */
-    fun setSpeeds(bottomSpeed: AngularVelocity, topSpeed: AngularVelocity) {
+    fun setSpeeds(bottomSpeed: AngularVelocity, topSpeed: AngularVelocity = bottomSpeed) {
         topMotorPIDFF.setpoint = topSpeed.asRPM
-        bottomMotorPIDFF.setpoint = bottomSpeed.asRPM
+        botMotorPIDFF.setpoint = bottomSpeed.asRPM
     }
 
     /** Runs the shooter using the current setpoint (given by [setSpeeds]) */
     fun runPIDFF() {
-        motorTop.setVoltage(topMotorPIDFF.calculate(motorTop.encoder.velocity))
-        motorBottom.setVoltage(bottomMotorPIDFF.calculate(motorBottom.encoder.velocity))
+        topMotor.setVoltage(topMotorPIDFF.calculate(topEncoder.velocity))
+        botMotor.setVoltage(botMotorPIDFF.calculate(botEncoder.velocity))
     }
 
     /** Returns true if both PIDs [PIDFF.atSetpoint] returns true. */
-    fun isAtSpeed(range: Double): Boolean {
-        return (motorBottom.encoder.velocity - topMotorPIDFF.setpoint).absoluteValue < range
-                && (motorTop.encoder.velocity - topMotorPIDFF.setpoint).absoluteValue < range
+    fun isAtSpeed(range: AngularVelocity = 50.RPM): Boolean {
+        return (botMotor.encoder.velocity - topMotorPIDFF.setpoint).absoluteValue < range.asRPM &&
+            (topMotor.encoder.velocity - topMotorPIDFF.setpoint).absoluteValue < range.asRPM
     }
 
     /** Put the top and bottom motor encoder RPMS to [SmartDashboard] */
     override fun periodic() {
-        SmartDashboard.putNumber("Shooter/TopMotorRPM", motorTop.encoder.velocity)
-        SmartDashboard.putNumber("Shooter/BottomMotorRPM", motorBottom.encoder.velocity)
-        /*mechanism2d
-            .getRoot("Carrot1Pos", 0.0, 0.0)
-            .setPosition(5 + 4 * kotlin.math.sin(Timer.getFPGATimestamp() / 2), 1.0)
-        SmartDashboard.putData("Mech2D", mechanism2d)*/
+        SmartDashboard.putNumber("Shooter/TopMotorRPM", topEncoder.velocity)
+        SmartDashboard.putNumber("Shooter/BottomMotorRPM", botEncoder.velocity)
+    }
+
+    /**
+     * Runs the Shooter at the specified power for the specified time, intended to get the shooter
+     * up to speed before feeding carrots
+     */
+    fun openloopSpinup(power: Double, time: Time = 0.4.seconds): Command {
+        return this.startEnd({ runAtPower(power) }, {}).withTimeout(time.asSeconds)
+    }
+
+    /**
+     * Runs the Shooter at the specified power for the specified time. If time is null, this will
+     * run indefinitely until canceled
+     */
+    fun openloopShoot(power: Double, time: Time? = null): Command {
+        time ?: return this.startEnd({ runAtPower(power) }, { stop() })
+        return this.startEnd({ runAtPower(power) }, { stop() }).withTimeout(time.asSeconds)
+    }
+
+    /**
+     * Attempts to run the Shooter at the specified speed, and will end once that speed is achieved.
+     * Intended to get Shooter up to speed before feeding carrots
+     */
+    fun spinup(
+        botSpeed: () -> AngularVelocity,
+        topSpeed: () -> AngularVelocity = botSpeed,
+        range: AngularVelocity = 50.RPM,
+    ): Command {
+        return this.run({
+                setSpeeds(botSpeed(), topSpeed())
+                runPIDFF()
+            })
+            .until { isAtSpeed(range) }
+    }
+
+    /**
+     * Attempts to run the Shooter at the specified speed for the specified time. If time is null,
+     * this will run indefinitely until canceled
+     */
+    fun shoot(
+        botSpeed: () -> AngularVelocity,
+        topSpeed: () -> AngularVelocity = botSpeed,
+        time: Time? = null,
+    ): Command {
+        val command =
+            this.run({
+                setSpeeds(botSpeed(), topSpeed())
+                runPIDFF()
+            })
+        time ?: return command
+        return command.withTimeout(time.asSeconds)
+    }
+
+    fun stopCommand(): Command {
+        return this.run { stop() }
     }
 }

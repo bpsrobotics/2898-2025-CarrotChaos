@@ -1,96 +1,111 @@
 package frc.robot.commands
 
 import beaverlib.utils.Units.Angular.AngularVelocity
+import beaverlib.utils.Units.Time
+import beaverlib.utils.Units.seconds
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
-import frc.robot.commands.intake.RunIntakeForTime
-import frc.robot.commands.shooter.OpenloopShooterForTime
-import frc.robot.commands.shooter.OpenloopSpinupForTime
-import frc.robot.commands.shooter.RunGateForTime
-import frc.robot.commands.shooter.ShootForTime
-import frc.robot.commands.shooter.SpinupShooter
-import frc.robot.commands.tunnel.RunTunnelForTime
+import frc.robot.subsystems.Gate
+import frc.robot.subsystems.Intake
+import frc.robot.subsystems.Shooter
+import frc.robot.subsystems.Tunnel
 
-fun IntakeForTimeOpenLoop(intakeSpeed: Double, tunnelSpeed: Double, gateReverseSpeed : Double = 0.1, time: Double = -1.0) =
+fun DoOpenloopIntake(
+    intakePower: Double = 0.45,
+    tunnelPower: Double = 0.4,
+    gateReverseSpeed: Double = 0.05,
+    time: Time? = null,
+) =
     ParallelRaceGroup(
-        RunIntakeForTime(intakeSpeed, time),
-        RunTunnelForTime(tunnelSpeed),
-        RunGateForTime(-gateReverseSpeed)
+        Intake.runAtPowerCommand(intakePower, time),
+        Tunnel.runAtPowerCommand(tunnelPower),
+        Gate.runAtPowerCommand(-gateReverseSpeed),
     )
 
-fun ShootForTimeOpenLoop(
-    shooterSpeed: Double,
-    gateSpeed: Double,
-    tunnelSpeed: Double,
-    spinupTime: Double,
-    shootTime: Double = -1.0,
+fun DoOpenLoopShooter(
+    shooterPower: Double = 0.6,
+    gatePower: Double = 0.4,
+    tunnelPower: Double = 0.4,
+    spinupTime: Time = 0.4.seconds,
+    shootTime: Time? = null,
 ) =
     SequentialCommandGroup(
-        OpenloopSpinupForTime(shooterSpeed, spinupTime),
+        Shooter.openloopSpinup(shooterPower, spinupTime),
         ParallelRaceGroup(
-            OpenloopShooterForTime(shooterSpeed, gateSpeed, shootTime),
-            RunTunnelForTime(tunnelSpeed),
+            Shooter.openloopShoot(shooterPower, shootTime),
+            Gate.runAtPowerCommand(gatePower),
+            Tunnel.runAtPowerCommand(tunnelPower),
         ),
     )
+
 fun DoShoot(
     shooterSpeed: () -> AngularVelocity,
-    gateSpeed: Double,
-    tunnelSpeed: Double,
-    shootTime: Double = -1.0,
+    tunnelPower: Double = 0.4,
+    gatePower: Double = 0.4,
+    shootTime: Time? = null,
 ) =
     SequentialCommandGroup(
-        SpinupShooter(shooterSpeed, shooterSpeed),
+        Shooter.spinup(shooterSpeed),
         ParallelRaceGroup(
-            ShootForTime(shooterSpeed, gateSpeed),
-            RunTunnelForTime(tunnelSpeed),
+            Shooter.shoot(shooterSpeed, time = shootTime),
+            Tunnel.runAtPowerCommand(tunnelPower),
+            Gate.runAtPowerCommand(gatePower),
         ),
     )
+
 fun DoShootIntake(
     shooterSpeed: () -> AngularVelocity,
-    intakeSpeed: Double,
-    gateSpeed: Double,
-    tunnelSpeed: Double,
-    shootTime: Double = -1.0,
+    intakePower: Double = 0.45,
+    tunnelPower: Double = 0.4,
+    gatePower: Double = 0.4,
+    shootTime: Time? = null,
 ) =
     SequentialCommandGroup(
         ParallelRaceGroup(
-            SpinupShooter(shooterSpeed, shooterSpeed),
-            RunIntakeForTime(intakeSpeed,tunnelSpeed)),
+            Shooter.spinup(shooterSpeed),
+            Intake.runAtPowerCommand(intakePower),
+            Tunnel.runAtPowerCommand(tunnelPower),
+        ),
         ParallelRaceGroup(
-
-            ShootForTime(shooterSpeed, gateSpeed, shootTime),
-            RunIntakeForTime(intakeSpeed),
-            RunTunnelForTime(tunnelSpeed),
+            Shooter.shoot(shooterSpeed, time = shootTime),
+            Intake.runAtPowerCommand(intakePower),
+            Tunnel.runAtPowerCommand(tunnelPower),
+            Gate.runAtPowerCommand(gatePower),
         ),
     )
-fun RunAllRobotForTime(
-    intakeSpeed: Double,
-    shooterSpeed: Double,
-    gateSpeed: Double,
-    tunnelSpeed: Double,
-    spinupTime: Double,
-    shootTime: Double = -1.0,
-) =
-    SequentialCommandGroup(
-        ParallelRaceGroup(
-            OpenloopSpinupForTime(shooterSpeed, spinupTime),
-            RunIntakeForTime(intakeSpeed,tunnelSpeed)),
-        ParallelRaceGroup(
 
-            OpenloopShooterForTime(shooterSpeed, gateSpeed, shootTime),
-            RunIntakeForTime(intakeSpeed),
-            RunTunnelForTime(tunnelSpeed),
-            ),
-    )
-fun OutakeRobot(
-    intakeSpeed: Double,
-    shooterSpeed: Double,
-    gateSpeed: Double,
-    tunnelSpeed: Double,
-    time: Double = -1.0,
+fun DoRunAllRobot(
+    intakePower: Double,
+    tunnelPower: Double,
+    gatePower: Double,
+    shooterPower: Double,
+    spinupTime: Time,
+    shootTime: Time? = null,
 ) =
     SequentialCommandGroup(
-        OpenloopShooterForTime(-shooterSpeed, -gateSpeed, time),
-            RunIntakeForTime(-intakeSpeed),
-            RunTunnelForTime(-tunnelSpeed),
+        ParallelRaceGroup(
+            Shooter.openloopSpinup(shooterPower, spinupTime),
+            Intake.runAtPowerCommand(intakePower),
+            Tunnel.runAtPowerCommand(tunnelPower),
+        ),
+        ParallelRaceGroup(
+            Shooter.openloopShoot(shooterPower, shootTime),
+            Intake.runAtPowerCommand(intakePower),
+            Tunnel.runAtPowerCommand(tunnelPower),
+            Gate.runAtPowerCommand(gatePower),
+        ),
+    )
+
+fun DoOutakeFullRobot(
+    intakePower: Double = 0.45,
+    tunnelPower: Double = 0.2,
+    gatePower: Double = 0.2,
+    shooterPower: Double = 0.1,
+    time: Time? = null,
+) =
+    SequentialCommandGroup(
+        Shooter.openloopShoot(-shooterPower, time),
+        Intake.runAtPowerCommand(-intakePower),
+        Tunnel.runAtPowerCommand(-tunnelPower),
+        Gate.runAtPowerCommand(-gatePower),
     )
