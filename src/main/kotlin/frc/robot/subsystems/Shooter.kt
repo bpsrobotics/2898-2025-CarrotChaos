@@ -16,9 +16,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap
-import frc.robot.engine.BeaverSysIDRoutine
+import frc.robot.beaverlib.utils.sysID.BeaverSysIDMotor
+import frc.robot.beaverlib.utils.sysID.BeaverSysIDRoutine
 import frc.robot.engine.PIDFF
-import frc.robot.engine.SysidMotor
 import frc.robot.subsystems.Shooter.setSpeeds
 import kotlin.math.absoluteValue
 
@@ -80,8 +80,8 @@ object Shooter : SubsystemBase() {
     var routine =
         BeaverSysIDRoutine(
             this,
-            SysidMotor("shooter-bottom", botMotor),
-            SysidMotor("shooter-top", topMotor),
+            BeaverSysIDMotor("shooter-bottom", botMotor),
+            BeaverSysIDMotor("shooter-top", topMotor),
         )
 
     /** Runs both shooter motors using openloop at the given [percent] */
