@@ -103,7 +103,7 @@ fun DoOutakeFullRobot(
     shooterPower: Double = 0.1,
     time: Time? = null,
 ) =
-    SequentialCommandGroup(
+    ParallelRaceGroup(
         Shooter.openloopShoot(-shooterPower, time),
         Intake.runAtPowerCommand(-intakePower),
         Tunnel.runAtPowerCommand(-tunnelPower),
