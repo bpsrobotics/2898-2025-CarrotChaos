@@ -19,15 +19,23 @@ import edu.wpi.first.math.util.Units
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.networktables.StructArrayPublisher
 import edu.wpi.first.networktables.StructPublisher
+import edu.wpi.first.units.Units.Meters
+import edu.wpi.first.units.Units.MetersPerSecond
+import edu.wpi.first.units.Units.Volt
+import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Filesystem
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import swervelib.SwerveController
 import swervelib.SwerveDrive
 import swervelib.SwerveDriveTest
+import swervelib.SwerveModule
 import swervelib.parser.SwerveDriveConfiguration
 import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
@@ -150,25 +158,23 @@ object Drivetrain : SubsystemBase() {
         swerveDrive.modules.forEach { it.driveMotor.voltage = volts }
     }
 
+
+
+
     /**
      * Return SysID command for drive motors from YAGSL
      *
      * @return A command that SysIDs the drive motors.
      */
-    fun sysIdDriveMotor(): Command? {
-        return SwerveDriveTest.generateSysIdCommand(
-            SwerveDriveTest.setDriveSysIdRoutine(
-                SysIdRoutine.Config(),
-                this,
-                swerveDrive,
-                12.0,
-                true,
-            ),
-            3.0,
-            5.0,
-            3.0,
-        )
-    }
+        fun sysIdDriveMotor(): Command? {
+            return SwerveDriveTest.generateSysIdCommand(
+                SwerveDriveTest.setDriveSysIdRoutine(
+                    SysIdRoutine.Config(),
+                    this,
+                    swerveDrive, 12.0, true),
+                3.0, 5.0, 3.0
+            )
+        }
 
     /**
      * Return SysID command for angle motors from YAGSL
@@ -356,22 +362,5 @@ object Drivetrain : SubsystemBase() {
             VecBuilder.fill(stdDevX, stdDevY, stdDevTheta)
         )
     }
-
-    /**
-     * PID Controller for the heading of the robot. Currently not used, as feedforward is a much
-     * better solution to fix drift.
-     */
-    val HeadingPID: PIDController = PIDController(0.005, 0.01, 0.0)
-
-    /**
-     * Calculate the heading PID for the robot.
-     *
-     * @param measurement The current heading of the robot.
-     * @param setpoint The desired heading of the robot.
-     * @return The calculated output of the PID controller.
-     */
-    @Deprecated("Use feedforward instead")
-    fun calculateHeadingPID(measurement: Double, setpoint: Double): Double {
-        return HeadingPID.calculate(measurement, setpoint)
-    }
 }
+
