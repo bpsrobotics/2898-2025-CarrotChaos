@@ -10,10 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.OI.process
-import frc.robot.commands.DoOpenloopIntake
-import frc.robot.commands.DoOutakeFullRobot
-import frc.robot.commands.DoShoot
-import frc.robot.commands.DoShootIntake
+import frc.robot.commands.*
 import frc.robot.commands.OI.NavXReset
 import frc.robot.commands.OI.Rumble
 import kotlin.math.pow
@@ -69,6 +66,7 @@ object OI : SubsystemBase() {
             .whileTrue(
                 DoShootIntake({ SmartDashboard.getNumber("Shooter/DesiredShooterRPM", 0.0).RPM })
             )
+        driverController.rightTrigger().whileTrue(AutoShootCarrots())
 
         //        driverController.x().whileTrue(Shooter.routine.fullSysID())
 

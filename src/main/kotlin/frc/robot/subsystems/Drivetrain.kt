@@ -100,7 +100,6 @@ object Drivetrain : SubsystemBase() {
             "UpdateOdometry",
             { result, camera ->
                 if (result.targets.isEmpty()) return@add
-                println(result.targets.first().poseAmbiguity)
                 if (
                     !result.multitagResult.isPresent && (result.targets.first().poseAmbiguity > 0.3)
                 )

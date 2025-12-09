@@ -4,7 +4,6 @@ import beaverlib.utils.Sugar.clamp
 import beaverlib.utils.Units.Angular.degrees
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
@@ -14,10 +13,11 @@ import kotlin.math.sign
 
 // 3, 3.2
 class AlignOdometry(
-    var targetPose2d: Pose2d = Pose2d(3.1, 4.24, Rotation2d(0.0)),
-    val maxSpeed: Double = 1.5,
-    val maxRotSpeed: Double = 1.0,
+    var targetPose2dProvider: () -> Pose2d,
+    val maxSpeed: Double = 1.0,
+    val maxRotSpeed: Double = 0.8,
 ) : Command() {
+    var targetPose2d = targetPose2dProvider()
     val timer = Timer()
     val yPID = PIDController(3.0, 0.3, 0.1)
     val xPID = PIDController(3.0, 0.3, 0.1)
@@ -33,6 +33,8 @@ class AlignOdometry(
         rotationPID.setpoint = targetPose2d.rotation.radians
         xPID.setpoint = targetPose2d.x
         yPID.setpoint = targetPose2d.y
+        targetPose2d = targetPose2dProvider()
+        println(targetPose2d)
     }
 
     override fun execute() {
