@@ -11,14 +11,13 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import frc.robot.Autos
-import frc.robot.commands.vision.AlignOdometry
 import frc.robot.engine.FieldMap
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Gate
 import frc.robot.subsystems.Shooter
 import kotlin.math.sqrt
 
-fun AutoShootCarrots(): Command {
+fun PathPlannerShootCarrots(): Command {
     val zooRadius = FieldMap.zooSafeRadius(Drivetrain.Constants.BumperWidth / 2)
     val distanceToFeeder =
         Drivetrain.pose.vector2.distance(FieldMap.teamFeederStation.center).meters
@@ -38,7 +37,10 @@ fun AutoShootCarrots(): Command {
         Autos.Constants.shootingPolynomial.calculate(distanceToFeeder.asMeters).RPM
 
     return SequentialCommandGroup(
-        ParallelCommandGroup(AlignOdometry(targetPose), Shooter.spinup({ desiredShooterSpeed })),
+        ParallelCommandGroup(
+            Autos.pathFindToPose(targetPose),
+            Shooter.spinup({ desiredShooterSpeed }),
+        ),
         ParallelRaceGroup(
             Shooter.shoot({ desiredShooterSpeed }, time = 2.0.seconds),
             Gate.runAtPowerCommand(0.4),

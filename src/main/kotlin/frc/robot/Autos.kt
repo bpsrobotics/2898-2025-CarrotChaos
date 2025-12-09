@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.trajectory.TrapezoidProfile
+import edu.wpi.first.wpilibj2.command.Command
 import frc.engine.utils.Polynomial
 import frc.robot.engine.FieldMap
 import frc.robot.subsystems.Drivetrain
@@ -159,5 +160,23 @@ object Autos {
         // Prevent the path from being flipped if the coordinates are already correct
         path.preventFlipping = true
         return path
+    }
+
+    fun pathFindToPose(
+        pose: Pose2d,
+        maxVelocity: VelocityUnit = 1.0.metersPerSecond,
+        maxAcceleration: Acceleration = 1.0.metersPerSecondSquared,
+        maxAngularVelocity: AngularVelocity = (1 * PI).radiansPerSecond,
+        maxAngularAcceleration: AngularAcceleration = (1 * PI).radiansPerSecondSquared,
+    ): Command {
+        val constraints =
+            PathConstraints(
+                maxVelocity.asMetersPerSecond,
+                maxAcceleration.asMetersPerSecondSquared,
+                maxAngularVelocity.asRadiansPerSecond,
+                maxAngularAcceleration.asRadiansPerSecondSquared,
+            ) // The constraints for this path.
+
+        return AutoBuilder.pathfindToPose(pose, constraints)
     }
 }
