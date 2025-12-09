@@ -7,7 +7,6 @@ import beaverlib.utils.Units.Angular.radiansPerSecond
 import beaverlib.utils.Units.Linear.feetPerSecond
 import beaverlib.utils.Units.Linear.inches
 import edu.wpi.first.math.VecBuilder
-import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
@@ -19,23 +18,15 @@ import edu.wpi.first.math.util.Units
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.networktables.StructArrayPublisher
 import edu.wpi.first.networktables.StructPublisher
-import edu.wpi.first.units.Units.Meters
-import edu.wpi.first.units.Units.MetersPerSecond
-import edu.wpi.first.units.Units.Volt
-import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Filesystem
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import swervelib.SwerveController
 import swervelib.SwerveDrive
 import swervelib.SwerveDriveTest
-import swervelib.SwerveModule
 import swervelib.parser.SwerveDriveConfiguration
 import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
@@ -109,12 +100,17 @@ object Drivetrain : SubsystemBase() {
             "UpdateOdometry",
             { result, camera ->
                 if (result.targets.isEmpty()) return@add
+                println(result.targets.first().poseAmbiguity)
                 if (
                     !result.multitagResult.isPresent && (result.targets.first().poseAmbiguity > 0.3)
                 )
                     return@add
                 val newPose = camera.getEstimatedRobotPose(result) ?: return@add
-                // addVisionMeasurement(newPose.toPose2d(), result.timestampSeconds, true)
+                addVisionMeasurement(
+                    newPose.toPose2d(),
+                    result.timestampSeconds,
+                    DriverStation.isDisabled(),
+                )
             },
         )
         setVisionMeasurementStdDevs(3.0, 4.0, 5.0)
@@ -158,23 +154,25 @@ object Drivetrain : SubsystemBase() {
         swerveDrive.modules.forEach { it.driveMotor.voltage = volts }
     }
 
-
-
-
     /**
      * Return SysID command for drive motors from YAGSL
      *
      * @return A command that SysIDs the drive motors.
      */
-        fun sysIdDriveMotor(): Command? {
-            return SwerveDriveTest.generateSysIdCommand(
-                SwerveDriveTest.setDriveSysIdRoutine(
-                    SysIdRoutine.Config(),
-                    this,
-                    swerveDrive, 12.0, true),
-                3.0, 5.0, 3.0
-            )
-        }
+    fun sysIdDriveMotor(): Command? {
+        return SwerveDriveTest.generateSysIdCommand(
+            SwerveDriveTest.setDriveSysIdRoutine(
+                SysIdRoutine.Config(),
+                this,
+                swerveDrive,
+                12.0,
+                true,
+            ),
+            3.0,
+            5.0,
+            3.0,
+        )
+    }
 
     /**
      * Return SysID command for angle motors from YAGSL
@@ -363,4 +361,3 @@ object Drivetrain : SubsystemBase() {
         )
     }
 }
-
