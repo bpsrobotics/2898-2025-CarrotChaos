@@ -13,11 +13,10 @@ import kotlin.math.sign
 
 // 3, 3.2
 class AlignOdometry(
-    var targetPose2dProvider: () -> Pose2d,
+    var targetPose2d: Pose2d,
     val maxSpeed: Double = 1.0,
     val maxRotSpeed: Double = 0.8,
 ) : Command() {
-    var targetPose2d = targetPose2dProvider()
     val timer = Timer()
     val yPID = PIDController(3.0, 0.3, 0.1)
     val xPID = PIDController(3.0, 0.3, 0.1)
@@ -33,7 +32,6 @@ class AlignOdometry(
         rotationPID.setpoint = targetPose2d.rotation.radians
         xPID.setpoint = targetPose2d.x
         yPID.setpoint = targetPose2d.y
-        targetPose2d = targetPose2dProvider()
         println(targetPose2d)
     }
 
