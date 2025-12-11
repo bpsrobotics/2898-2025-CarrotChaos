@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import frc.robot.Robot.Constants.currentMode
 import org.littletonrobotics.junction.LogFileUtil
 import org.littletonrobotics.junction.LoggedRobot
 import org.littletonrobotics.junction.Logger
@@ -28,7 +29,7 @@ class Robot : LoggedRobot() {
     val commandScheduler : CommandScheduler = CommandScheduler.getInstance()
     object Constants {
         val simMode = Mode.SIM
-        val currentMode = if (RobotBase.isReal()) { Mode.REAL } else simMode
+        val currentMode = if (isReal()) { Mode.REAL } else simMode
         enum class Mode {
             /** Running on a real robot.  */
             REAL,
@@ -41,7 +42,6 @@ class Robot : LoggedRobot() {
         }
     }
     // The log path can be read from anything, but this method is provided for convenience
-    var logPath: String? = LogFileUtil.findReplayLog() // The following sources are used automatically, with these priorities:
     //
     // 1. The value of the "AKIT_LOG_PATH" environment variable, if set
     // 2. The file currently open in AdvantageScope, if available
@@ -58,7 +58,6 @@ class Robot : LoggedRobot() {
         Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA)
         Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE)
         Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH)
-        Logger.setReplaySource(WPILOGReader(logPath))
         // The addPathSuffix function generates a new filename by adding the suffix.
 
         when (Constants.currentMode) {
@@ -86,6 +85,7 @@ class Robot : LoggedRobot() {
         // Instantiate our RobotContainer. This will perform all our button bindings, and put our autonomous chooser on the dashboard.
         robotContainer = RobotContainer()
         SmartDashboard.putBoolean("/Auto/UseMovementAuto", true)
+        SmartDashboard.putString("/AK/Mode", currentMode.toString())
 //        CameraServer.startAutomaticCapture()
     }
 
