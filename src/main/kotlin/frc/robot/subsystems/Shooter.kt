@@ -116,8 +116,8 @@ object Shooter : SubsystemBase() {
 
     /** Put the top and bottom motor encoder RPMS to [SmartDashboard] */
     override fun periodic() {
-        SmartDashboard.putNumber("Shooter/TopMotorRPM", topEncoder.velocity)
-        SmartDashboard.putNumber("Shooter/BottomMotorRPM", botEncoder.velocity)
+        SmartDashboard.putNumber("Subsystems/Shooter/TopMotorRPM", topEncoder.velocity)
+        SmartDashboard.putNumber("Subsystems/Shooter/BottomMotorRPM", botEncoder.velocity)
     }
 
     /**

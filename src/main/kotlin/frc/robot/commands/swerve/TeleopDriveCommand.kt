@@ -51,10 +51,10 @@ class TeleopDriveCommand(
 
         strafeVelocity *= (1.0 - (slowMode.pow(3) * 0.8))
         angVelocity *= (1.0 - (slowMode.pow(3) * 0.85))
-        SmartDashboard.putNumber("vX", forwardVelocity)
-        SmartDashboard.putNumber("vY", strafeVelocity)
-        SmartDashboard.putNumber("omega", angVelocity)
-        SmartDashboard.putNumber("slowmode", slowMode)
+        SmartDashboard.putNumber("Commands/TelopDrive/vX", forwardVelocity)
+        SmartDashboard.putNumber("Commands/TelopDrive/vY", strafeVelocity)
+        SmartDashboard.putNumber("Commands/TelopDrive/omega", angVelocity)
+        SmartDashboard.putNumber("Commands/TelopDrive/slowmode", slowMode)
 
         // Drive using raw values.
         //        swerve.drive(

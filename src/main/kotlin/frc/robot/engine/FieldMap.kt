@@ -23,6 +23,8 @@ object FieldMap {
     val FieldHeight = 26.feet + 4.inches
     val FeederWidth = 20.inches
     val ZooWidth = 96.inches
+    val FieldCenter = Vector2(FieldLength.asMeters / 2, FieldHeight.asMeters / 2)
+    val CarrotPatchWidth = 6.feet
 
     fun zooSafeRadius(safeDistance: DistanceUnit): DistanceUnit {
         return (ZooWidth / 2) * sqrt(2.0) + safeDistance
@@ -64,6 +66,10 @@ object FieldMap {
                 center - Vector2(ZooWidth.asMeters / 2, ZooWidth.asMeters / 2),
                 center + Vector2(ZooWidth.asMeters / 2, ZooWidth.asMeters / 2),
             )
+    }
+
+    object CarrotPatch {
+        val center = FieldCenter
     }
 
     val teamFeederStation: FeederStation

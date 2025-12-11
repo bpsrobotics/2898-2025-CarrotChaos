@@ -4,17 +4,10 @@
 package frc.robot
 
 import edu.wpi.first.cameraserver.CameraServer
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.InstantCommand
-import frc.robot.Robot.Constants.currentMode
-import org.littletonrobotics.junction.LogFileUtil
-import org.littletonrobotics.junction.LoggedRobot
-import org.littletonrobotics.junction.Logger
-import org.littletonrobotics.junction.networktables.NT4Publisher
-import org.littletonrobotics.junction.wpilog.WPILOGReader
-import org.littletonrobotics.junction.wpilog.WPILOGWriter
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -22,13 +15,13 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-class Robot : LoggedRobot() {
+class Robot : TimedRobot() { // LoggedRobot() {
     var autoCommand: Command = InstantCommand()
     lateinit var robotContainer: RobotContainer
     val commandScheduler: CommandScheduler = CommandScheduler.getInstance()
 
     object Constants {
-        val simMode = Mode.SIM
+        /*val simMode = Mode.SIM
         val currentMode =
             if (isReal()) {
                 Mode.REAL
@@ -43,7 +36,7 @@ class Robot : LoggedRobot() {
 
             /** Replaying from a log file. */
             REPLAY,
-        }
+        }*/
     }
 
     // The log path can be read from anything, but this method is provided for convenience
@@ -57,7 +50,7 @@ class Robot : LoggedRobot() {
      * initialization code.
      */
     override fun robotInit() {
-        // Instantiate our RobotContainer. This will perform all our button bindings, and put our
+        /*// Instantiate our RobotContainer. This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME)
         Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE)
@@ -87,7 +80,7 @@ class Robot : LoggedRobot() {
             }
         }
 
-        Logger.start() // Start logging! No more data receivers, replay sources, or metadata values
+        Logger.start() // Start logging! No more data receivers, replay sources, or metadata values*/
         // may be added.
         // Instantiate our RobotContainer. This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
@@ -95,10 +88,8 @@ class Robot : LoggedRobot() {
         val camera = CameraServer.startAutomaticCapture()
         camera.setFPS(30)
         camera.setResolution(640, 480)
-        SmartDashboard.putBoolean("/Auto/UseMovementAuto", true)
-        //        CameraServer.startAutomaticCapture()
-        SmartDashboard.putString("/AK/Mode", currentMode.toString())
-        //        CameraServer.startAutomaticCapture()
+        // SmartDashboard.putBoolean("/Auto/UseMovementAuto", true)
+        // SmartDashboard.putString("/AK/Mode", currentMode.toString())
     }
 
     /**
@@ -127,7 +118,7 @@ class Robot : LoggedRobot() {
         //        autoCommand = TopTenAutosThatMove()
         //        autoCommand.schedule()
 
-        autoCommand = robotContainer.getAutonomousCommand()
+        autoCommand = Autos.autonomousCommand
         autoCommand.let { autoCommand.schedule() }
     }
 

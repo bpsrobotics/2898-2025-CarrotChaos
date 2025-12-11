@@ -1,4 +1,4 @@
-package frc.robot.commands
+package frc.robot.commands.autos
 
 import beaverlib.utils.Units.Angular.RPM
 import beaverlib.utils.Units.Angular.asDegrees
@@ -17,15 +17,18 @@ import kotlin.math.sqrt
 
 class AutoShootCarrots : Command() {
     companion object {
+
         val targetPose: Pose2d
             get() =
                 ((Drivetrain.pose.vector2 - FieldMap.teamFeederStation.center).unit *
                         (FieldMap.FeederWidth * sqrt(2.0 + 0.1) +
                                 Drivetrain.Constants.BumperWidth / 2)
                             .asMeters) // Get the closest pose that is proper distance from the
-                                       // feeder
+                    // feeder
                     .toPose2d(
-                        Drivetrain.pose.vector2.angleTo(FieldMap.teamFeederStation.center).asDegrees
+                        Drivetrain.pose.vector2
+                            .angleTo(FieldMap.teamFeederStation.center)
+                            .asDegrees - 180
                     )
 
         val desiredShooterSpeed = { 3500.RPM }

@@ -3,18 +3,14 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot
 
-import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
-import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.OI.configureBindings
 import frc.robot.OI.rightTrigger
 import frc.robot.OI.translationX
 import frc.robot.OI.translationY
 import frc.robot.OI.turnX
 import frc.robot.commands.swerve.TeleopDriveCommand
-import frc.robot.subsystems.Drivetrain
-import frc.robot.subsystems.Intake
+import frc.robot.engine.FieldMap
+import frc.robot.subsystems.*
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -27,7 +23,6 @@ class RobotContainer {
     // private val m_exampleSubsystem = ExampleSubsystem()
     // Replace with CommandPS4Controller or CommandJoystick if needed
 
-    private var autoCommandChooser: SendableChooser<Command> = SendableChooser()
     val alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red)
 
     val reverseDrive =
@@ -39,9 +34,9 @@ class RobotContainer {
 
     val teleopDrive: TeleopDriveCommand =
         TeleopDriveCommand(
-            { MathUtil.applyDeadband(translationY * reverseDrive, 0.1) },
-            { MathUtil.applyDeadband(translationX * reverseDrive, 0.1) },
-            { MathUtil.applyDeadband(-turnX, 0.1) },
+            { translationY * reverseDrive },
+            { translationX * reverseDrive },
+            { -turnX },
             { true },
             { rightTrigger },
         )
@@ -52,16 +47,23 @@ class RobotContainer {
 
         Drivetrain.defaultCommand = teleopDrive
 
-        configureBindings()
+        Autos.sendAutoChooser()
+
+        OI.configureBindings()
     }
 
-    fun getAutonomousCommand(): Command {
-        val path = autoCommandChooser.selected
-        return path
-    }
-
+    /**
+     * References every subsystem so that they are cached before the robot starts, meaning there is
+     * not a lag spike during auto, and all the code attempts to load all subsystems from scratch
+     */
     private fun initializeObjects() {
         Drivetrain
         Intake
+        Tunnel
+        Gate
+        Shooter
+        Vision
+        FieldMap
+        OI
     }
 }

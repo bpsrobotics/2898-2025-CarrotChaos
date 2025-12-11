@@ -33,8 +33,8 @@ object Intake : SubsystemBase() {
         get() = motor.encoder.velocity.RPM
 
     override fun periodic() {
-        SmartDashboard.putNumber("Intake/motorVoltage", motor.busVoltage)
-        SmartDashboard.putNumber("Intake/motorCurrent", motor.outputCurrent)
+        // SmartDashboard.putNumber("Subsystem/Intake/motorVoltage", motor.busVoltage)
+        SmartDashboard.putNumber("Subsystems/Intake/motorCurrent", motor.outputCurrent)
     }
 
     /**

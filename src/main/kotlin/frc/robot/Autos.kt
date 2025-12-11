@@ -20,8 +20,13 @@ import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.trajectory.TrapezoidProfile
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import frc.engine.utils.Polynomial
+import frc.robot.commands.autos.AutoShootCarrots
+import frc.robot.commands.autos.AutoShootMove
 import frc.robot.engine.FieldMap
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Drivetrain.driveConsumer
@@ -29,6 +34,8 @@ import frc.robot.subsystems.Drivetrain.getAlliance
 import kotlin.math.PI
 
 object Autos {
+    private var autoCommandChooser: SendableChooser<Command> = SendableChooser()
+
     object Constants {
         val shootingPolynomial = Polynomial()
 
@@ -62,13 +69,6 @@ object Autos {
             )
     }
 
-    val autoShooterSpeed
-        get() = {
-            Constants.shootingPolynomial.calculate(
-                Vector2(Drivetrain.pose).distance(FieldMap.teamFeederStation.center)
-            )
-        }
-
     init {
         AutoBuilder.configure(
             { Drivetrain.pose }, // Robot pose supplier
@@ -88,6 +88,39 @@ object Autos {
             Drivetrain, // Reference to this subsystem to set requirements
         )
     }
+
+    val autos: Map<String, Command> =
+        mapOf(
+            Pair("Vision Shoot Feeder", AutoShootCarrots()),
+            Pair(
+                "Shoot Feeder, Movement Around Zoo Down",
+                AutoShootMove(
+                    1.0,
+                    (FieldMap.teamZoo.center.y -
+                            (Drivetrain.Constants.BumperWidth.asMeters / 2) -
+                            0.1)
+                        .meters,
+                    FieldMap.FieldCenter.x.meters,
+                ),
+            ),
+        )
+
+    fun sendAutoChooser() {
+        autoCommandChooser.setDefaultOption("No Auto", InstantCommand())
+
+        autos.forEach { (k, v) -> autoCommandChooser.addOption(k, v) }
+        SmartDashboard.putData("Auto Chooser", autoCommandChooser)
+    }
+
+    val autonomousCommand: Command
+        get() = autoCommandChooser.selected
+
+    val autoShooterSpeed
+        get() = {
+            Constants.shootingPolynomial.calculate(
+                Vector2(Drivetrain.pose).distance(FieldMap.teamFeederStation.center)
+            )
+        }
 
     //    /**
     //     * Gets a command that follows a path created in PathPlanner.
@@ -168,15 +201,15 @@ object Autos {
         maxAcceleration: Acceleration = 1.0.metersPerSecondSquared,
         maxAngularVelocity: AngularVelocity = (1 * PI).radiansPerSecond,
         maxAngularAcceleration: AngularAcceleration = (1 * PI).radiansPerSecondSquared,
-    ): Command {
-        val constraints =
+    ): Command =
+        AutoBuilder.pathfindToPose(
+            pose,
             PathConstraints(
                 maxVelocity.asMetersPerSecond,
                 maxAcceleration.asMetersPerSecondSquared,
                 maxAngularVelocity.asRadiansPerSecond,
                 maxAngularAcceleration.asRadiansPerSecondSquared,
-            ) // The constraints for this path.
-
-        return AutoBuilder.pathfindToPose(pose, constraints)
-    }
+            ),
+        )
+    // The constraints for this path.)
 }

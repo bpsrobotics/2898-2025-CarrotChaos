@@ -1,13 +1,13 @@
 package frc.robot.commands.vision
 
 import beaverlib.utils.Sugar.clamp
-import beaverlib.utils.Units.Angular.degrees
+import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.Drivetrain
+import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
@@ -17,19 +17,28 @@ class AlignOdometry(
     val maxSpeed: Double = 1.0,
     val maxRotSpeed: Double = 0.8,
 ) : Command() {
-    val timer = Timer()
-    val yPID = PIDController(3.0, 0.3, 0.1)
-    val xPID = PIDController(3.0, 0.3, 0.1)
+    companion object {
+        val deadzone = 0.05
+        val ks = 0.05
+        val yPID = PIDController(3.0, 0.3, 0.1)
+        val xPID = PIDController(3.0, 0.3, 0.1)
+        val rotationPID = PIDController(3.0, 0.2, 0.1)
 
-    val rotationPID = PIDController(3.0, 0.2, 0.1)
+        init {
+            rotationPID.enableContinuousInput(-PI, PI)
+        }
+    }
 
     init {
         addRequirements(Drivetrain)
-        rotationPID.enableContinuousInput(-180.degrees.asRadians, 180.degrees.asRadians)
     }
 
     override fun initialize() {
-        rotationPID.setpoint = targetPose2d.rotation.radians
+        xPID.reset()
+        yPID.reset()
+        rotationPID.reset()
+
+        rotationPID.setpoint = MathUtil.angleModulus(targetPose2d.rotation.radians)
         xPID.setpoint = targetPose2d.x
         yPID.setpoint = targetPose2d.y
         println(targetPose2d)
@@ -39,9 +48,6 @@ class AlignOdometry(
         var rotationSpeed = rotationPID.calculate(Drivetrain.pose.rotation.radians)
         var xSpeed = xPID.calculate(Drivetrain.pose.x)
         var ySpeed = yPID.calculate(Drivetrain.pose.y)
-
-        val deadzone = 0.003
-        val ks = 0.05
 
         if (xSpeed.absoluteValue < deadzone) xSpeed = 0.0 else xSpeed += ks * xSpeed.sign
         //

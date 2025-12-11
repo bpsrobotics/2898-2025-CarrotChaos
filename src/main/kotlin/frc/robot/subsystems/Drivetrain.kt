@@ -108,7 +108,7 @@ object Drivetrain : SubsystemBase() {
                 addVisionMeasurement(
                     newPose.toPose2d(),
                     result.timestampSeconds,
-                    DriverStation.isDisabled(),
+                    !DriverStation.isTeleop(),
                 )
             },
         )
