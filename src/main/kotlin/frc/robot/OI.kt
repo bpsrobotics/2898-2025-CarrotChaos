@@ -56,14 +56,14 @@ object OI : SubsystemBase() {
         // stuck carrots
         highHatForward.whileTrue(DoOutakeFullRobot()) // Outtake
 
-        SmartDashboard.putNumber("Subsystems/Shooter/DesiredShooterRPM", 0.0)
+        SmartDashboard.putNumber("Subsystems/Shooter/DesiredShooterRPM", 3500.0)
 
         // If operator trigger is pressed, and not intaking, run the shoot command
         operatorTrigger
             .and(highHatBack.negate())
             .whileTrue(
                 DoShoot({
-                    SmartDashboard.getNumber("Subsystems/Shooter/DesiredShooterRPM", 0.0).RPM
+                    SmartDashboard.getNumber("Subsystems/Shooter/DesiredShooterRPM", 3500.0).RPM
                 })
             )
 
@@ -72,7 +72,7 @@ object OI : SubsystemBase() {
             .and(highHatBack)
             .whileTrue(
                 DoShootIntake({
-                    SmartDashboard.getNumber("Subsystems/Shooter/DesiredShooterRPM", 0.0).RPM
+                    SmartDashboard.getNumber("Subsystems/Shooter/DesiredShooterRPM", 3500.0).RPM
                 })
             )
         driverController.rightTrigger().whileTrue(AutoShootCarrots())
