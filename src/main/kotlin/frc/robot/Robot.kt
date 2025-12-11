@@ -4,7 +4,6 @@
 package frc.robot
 
 import edu.wpi.first.cameraserver.CameraServer
-import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
@@ -17,38 +16,41 @@ import org.littletonrobotics.junction.networktables.NT4Publisher
 import org.littletonrobotics.junction.wpilog.WPILOGReader
 import org.littletonrobotics.junction.wpilog.WPILOGWriter
 
-
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-class Robot : TimedRobot() {
+class Robot : LoggedRobot() {
     var autoCommand: Command = InstantCommand()
     lateinit var robotContainer: RobotContainer
     val commandScheduler: CommandScheduler = CommandScheduler.getInstance()
-    val commandScheduler : CommandScheduler = CommandScheduler.getInstance()
+
     object Constants {
         val simMode = Mode.SIM
-        val currentMode = if (isReal()) { Mode.REAL } else simMode
+        val currentMode =
+            if (isReal()) {
+                Mode.REAL
+            } else simMode
+
         enum class Mode {
-            /** Running on a real robot.  */
+            /** Running on a real robot. */
             REAL,
 
-            /** Running a physics simulator.  */
+            /** Running a physics simulator. */
             SIM,
 
-            /** Replaying from a log file.  */
-            REPLAY
+            /** Replaying from a log file. */
+            REPLAY,
         }
     }
+
     // The log path can be read from anything, but this method is provided for convenience
     //
     // 1. The value of the "AKIT_LOG_PATH" environment variable, if set
     // 2. The file currently open in AdvantageScope, if available
     // 3. The result of the prompt displayed to the user
-
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -75,18 +77,20 @@ class Robot : TimedRobot() {
             else -> {
                 setUseTiming(false) // Run as fast as possible
                 val logPath =
-                    LogFileUtil.findReplayLog() // Pull the replay log from AdvantageScope (or prompt the user)
+                    LogFileUtil
+                        .findReplayLog() // Pull the replay log from AdvantageScope (or prompt the
+                // user)
                 Logger.setReplaySource(WPILOGReader(logPath)) // Read replay log
                 Logger.addDataReceiver(
-                    WPILOGWriter(
-                        LogFileUtil.addPathSuffix(logPath, "_sim")
-                    )
+                    WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))
                 ) // Save outputs to a new log
             }
         }
 
-        Logger.start() // Start logging! No more data receivers, replay sources, or metadata values may be added.
-        // Instantiate our RobotContainer. This will perform all our button bindings, and put our autonomous chooser on the dashboard.
+        Logger.start() // Start logging! No more data receivers, replay sources, or metadata values
+        // may be added.
+        // Instantiate our RobotContainer. This will perform all our button bindings, and put our
+        // autonomous chooser on the dashboard.
         robotContainer = RobotContainer()
         val camera = CameraServer.startAutomaticCapture()
         camera.setFPS(30)
@@ -94,13 +98,12 @@ class Robot : TimedRobot() {
         SmartDashboard.putBoolean("/Auto/UseMovementAuto", true)
         //        CameraServer.startAutomaticCapture()
         SmartDashboard.putString("/AK/Mode", currentMode.toString())
-//        CameraServer.startAutomaticCapture()
+        //        CameraServer.startAutomaticCapture()
     }
 
     /**
      * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
      * that you want ran during disabled, autonomous, teleoperated and test.
-     *
      *
      * This runs after the mode specific periodic functions, but before LiveWindow and
      * SmartDashboard integrated updating.
@@ -113,24 +116,24 @@ class Robot : TimedRobot() {
         commandScheduler.run()
     }
 
-    /** This function is called once each time the robot enters Disabled mode.  */
-    override fun disabledInit() {
-    }
+    /** This function is called once each time the robot enters Disabled mode. */
+    override fun disabledInit() {}
+
     override fun disabledPeriodic() {}
 
-    /** This autonomous runs the autonomous command selected by your [RobotContainer] class.  */
+    /** This autonomous runs the autonomous command selected by your [RobotContainer] class. */
     override fun autonomousInit() {
-//        if( SmartDashboard.getBoolean("/Auto/UseMovementAuto", false)) {
-//        autoCommand = TopTenAutosThatMove()
-//        autoCommand.schedule()
+        //        if( SmartDashboard.getBoolean("/Auto/UseMovementAuto", false)) {
+        //        autoCommand = TopTenAutosThatMove()
+        //        autoCommand.schedule()
 
         autoCommand = robotContainer.getAutonomousCommand()
         autoCommand.let { autoCommand.schedule() }
-
     }
 
-    /** This function is called periodically during autonomous.  */
+    /** This function is called periodically during autonomous. */
     override fun autonomousPeriodic() {}
+
     override fun teleopInit() {
 
         // This makes sure that the autonomous stops running when
@@ -139,26 +142,22 @@ class Robot : TimedRobot() {
         // this line or comment it out.
 
         autoCommand.cancel()
-
-
-
     }
 
-    /** This function is called periodically during operator control.  */
-    override fun teleopPeriodic() {
+    /** This function is called periodically during operator control. */
+    override fun teleopPeriodic() {}
 
-    }
     override fun testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll()
     }
 
-    /** This function is called periodically during test mode.  */
+    /** This function is called periodically during test mode. */
     override fun testPeriodic() {}
 
-    /** This function is called once when the robot is first started up.  */
+    /** This function is called once when the robot is first started up. */
     override fun simulationInit() {}
 
-    /** This function is called periodically whilst in simulation.  */
+    /** This function is called periodically whilst in simulation. */
     override fun simulationPeriodic() {}
 }
