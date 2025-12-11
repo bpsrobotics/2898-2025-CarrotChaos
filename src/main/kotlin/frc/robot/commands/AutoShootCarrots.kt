@@ -25,17 +25,13 @@ fun AutoShootCarrots(): Command {
 
     // Gets pose that puts robot in range of the feeder
     val targetPose = {
-        if (distanceToFeeder() < zooRadius) Drivetrain.pose
-        else
-            ((Drivetrain.pose.vector2 - FieldMap.teamFeederStation.center).unit *
-                    (FieldMap.FeederWidth * sqrt(2.0 + 0.1) + Drivetrain.Constants.BumperWidth / 2)
-                        .asMeters) // Get the closest pose that is proper distance from the feeder
-                .toPose2d(
-                    Vector2(Drivetrain.pose).angleTo(FieldMap.teamFeederStation.center).asDegrees
-                )
+        ((Drivetrain.pose.vector2 - FieldMap.teamFeederStation.center).unit *
+                (FieldMap.FeederWidth * sqrt(2.0 + 0.1) + Drivetrain.Constants.BumperWidth / 2)
+                    .asMeters) // Get the closest pose that is proper distance from the feeder
+            .toPose2d(Vector2(Drivetrain.pose).angleTo(FieldMap.teamFeederStation.center).asDegrees)
     }
     // Create the desired pose given the rotation
-    val desiredShooterSpeed = { 6000.RPM }
+    val desiredShooterSpeed = { 3500.RPM }
     // Autos.Constants.shootingPolynomial.calculate(distanceToFeeder.asMeters).RPM
 
     return SequentialCommandGroup(
