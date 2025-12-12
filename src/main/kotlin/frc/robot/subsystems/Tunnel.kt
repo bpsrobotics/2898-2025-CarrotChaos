@@ -12,10 +12,6 @@ import com.revrobotics.spark.config.SparkMaxConfig
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotMap
-import frc.robot.RobotMap.FeederSharkId
-import frc.robot.RobotMap.IntakeSharkId
-import frc.robot.engine.LaserSharkObjectSensor
-import frc.robot.engine.ObjectSensor
 
 class Carrot(var offset: DistanceUnit) {
     companion object {
@@ -33,8 +29,8 @@ class Carrot(var offset: DistanceUnit) {
 object Tunnel : SubsystemBase() {
     private val motor = SparkMax(RobotMap.TunnelId, SparkLowLevel.MotorType.kBrushless)
     private val motorConfig: SparkMaxConfig = SparkMaxConfig()
-    private val intakeDetector: ObjectSensor = LaserSharkObjectSensor(IntakeSharkId, 2.inches)
-    private val feederDetector: ObjectSensor = LaserSharkObjectSensor(FeederSharkId, 2.inches)
+    /*private val intakeDetector: ObjectSensor = //LaserSharkObjectSensor(IntakeSharkId, 2.inches)
+    private val feederDetector: ObjectSensor = //LaserSharkObjectSensor(FeederSharkId, 2.inches)
 
     object CarrotCounter {
         val carrots: MutableList<Carrot> = mutableListOf()
@@ -56,7 +52,7 @@ object Tunnel : SubsystemBase() {
             carrots.removeAt(0)
             carrots.forEach { carrot -> carrot.offset += Carrot.averageLength }
         }
-    }
+    }*/
 
     object Constants {
         val Diameter = 6.inches // todo
@@ -86,7 +82,7 @@ object Tunnel : SubsystemBase() {
     }
 
     override fun periodic() {
-        CarrotCounter.update()
+        //CarrotCounter.update()
     }
 
     /**

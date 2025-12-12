@@ -1,9 +1,5 @@
 package frc.robot.engine
 
-import beaverlib.utils.Units.Linear.DistanceUnit
-import com.cuforge.libcu.Lasershark
-import edu.wpi.first.math.filter.Debouncer
-
 interface ObjectSensor {
     var stick: Boolean
 
@@ -27,7 +23,7 @@ interface ObjectSensor {
     }
 }
 
-class LaserSharkObjectSensor(
+/*class LaserSharkObjectSensor(
     channel: Int,
     var detectionRange: DistanceUnit,
     val debouncer: Debouncer = Debouncer(0.1),
@@ -38,4 +34,4 @@ class LaserSharkObjectSensor(
     override fun get(): Boolean {
         return debouncer.calculate(laserShark.distanceMeters < detectionRange.asMeters)
     }
-}
+}*/

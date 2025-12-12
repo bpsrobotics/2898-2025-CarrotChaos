@@ -98,14 +98,18 @@ object Drivetrain : SubsystemBase() {
         // Updates odometry whenever vision sees apriltag
         Vision.listeners.add(
             "UpdateOdometry",
-            { result, camera ->
-                if (result.targets.isEmpty()) return@add
+            fun(result, camera) {
+                if (result.targets.isEmpty()) return
                 if (
                     !result.multitagResult.isPresent && (result.targets.first().poseAmbiguity > 0.3)
                 )
-                    return@add
-                val newPose = camera.getEstimatedRobotPose(result) ?: return@add
-                // addVisionMeasurement(newPose.toPose2d(), result.timestampSeconds, true)
+                    return
+                val newPose = camera.getEstimatedRobotPose(result) ?: return
+                addVisionMeasurement(
+                    newPose.toPose2d(),
+                    result.timestampSeconds,
+                    !DriverStation.isTeleop(),
+                )
             },
         )
         setVisionMeasurementStdDevs(3.0, 4.0, 5.0)
