@@ -58,7 +58,7 @@ class Robot : TimedRobot() {
         //        autoCommand = TopTenAutosThatMove()
         //        autoCommand.schedule()
 
-        autoCommand = robotContainer.getAutonomousCommand()
+        autoCommand = Autos.autonomousCommand
         autoCommand.let { autoCommand.schedule() }
     }
 

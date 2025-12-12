@@ -5,8 +5,6 @@ package frc.robot
 
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
-import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.OI.configureBindings
 import frc.robot.OI.rightTrigger
 import frc.robot.OI.translationX
@@ -27,7 +25,6 @@ class RobotContainer {
     // private val m_exampleSubsystem = ExampleSubsystem()
     // Replace with CommandPS4Controller or CommandJoystick if needed
 
-    private var autoCommandChooser: SendableChooser<Command> = SendableChooser()
     val alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red)
 
     val reverseDrive =
@@ -53,11 +50,6 @@ class RobotContainer {
         Drivetrain.defaultCommand = teleopDrive
 
         configureBindings()
-    }
-
-    fun getAutonomousCommand(): Command {
-        val path = autoCommandChooser.selected
-        return path
     }
 
     private fun initializeObjects() {
