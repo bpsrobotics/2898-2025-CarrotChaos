@@ -16,6 +16,7 @@ import frc.robot.commands.DoShoot
 import frc.robot.commands.DoShootIntake
 import frc.robot.commands.OI.NavXReset
 import frc.robot.commands.OI.Rumble
+import frc.robot.commands.autos.AutoShootCarrots
 import kotlin.math.pow
 
 /**
@@ -72,7 +73,7 @@ object OI : SubsystemBase() {
                     SmartDashboard.getNumber("Subsystems/Shooter/DesiredShooterRPM", 3500.0).RPM
                 })
             )
-        // driverController.rightTrigger().whileTrue(AutoShootCarrots())
+        driverController.rightTrigger().whileTrue(AutoShootCarrots())
     }
 
     /**
@@ -114,7 +115,7 @@ object OI : SubsystemBase() {
      * Driver controller's throttle on the left joystick for the X Axis, from -1 (left) to 1 (right)
      */
     val translationX
-        get() = driverController.leftX.process(power = INPUT_EXPONENT)
+        get() = driverController.leftX
 
     val translationVector
         get() =
@@ -127,20 +128,20 @@ object OI : SubsystemBase() {
      * Driver controller's throttle on the left joystick for the Y Axis, from -1 (down) to 1 (up)
      */
     val translationY
-        get() = driverController.leftY.process(power = INPUT_EXPONENT)
+        get() = driverController.leftY
 
     /**
      * Driver controller's throttle on the right joystick for the X Axis, from -1 (left) to 1
      * (right)
      */
     val turnX
-        get() = driverController.rightX.process(power = 1.0)
+        get() = driverController.rightX
 
     /**
      * Driver controller's throttle on the right joystick for the Y Axis, from -1 (down) to 1 (up)
      */
     val turnY
-        get() = driverController.rightY.process(power = INPUT_EXPONENT)
+        get() = driverController.rightY
 
     val leftTrigger
         get() = driverController.leftTriggerAxis

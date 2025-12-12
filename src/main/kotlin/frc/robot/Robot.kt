@@ -4,6 +4,7 @@
 package frc.robot
 
 import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.InstantCommand
@@ -18,6 +19,7 @@ class Robot : TimedRobot() { // LoggedRobot() {
     var autoCommand: Command = InstantCommand()
     lateinit var robotContainer: RobotContainer
     val commandScheduler: CommandScheduler = CommandScheduler.getInstance()
+    var m_gcTimer: Timer = Timer()
 
     object Constants {
         /*val simMode = Mode.SIM
@@ -49,6 +51,7 @@ class Robot : TimedRobot() { // LoggedRobot() {
      * initialization code.
      */
     override fun robotInit() {
+        m_gcTimer.restart()
         /*// Instantiate our RobotContainer. This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME)
@@ -100,6 +103,9 @@ class Robot : TimedRobot() { // LoggedRobot() {
         // commands, running already-scheduled commands, removing finished or interrupted commands,
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
+        if (m_gcTimer.advanceIfElapsed(5.0)) {
+            System.gc()
+        }
         commandScheduler.run()
     }
 
