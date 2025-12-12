@@ -16,6 +16,7 @@ import frc.robot.commands.DoShoot
 import frc.robot.commands.DoShootIntake
 import frc.robot.commands.OI.NavXReset
 import frc.robot.commands.OI.Rumble
+import frc.robot.commands.autos.AutoShootCarrots
 import kotlin.math.pow
 import kotlin.math.sign
 
@@ -69,6 +70,7 @@ object OI : SubsystemBase() {
             .whileTrue(
                 DoShootIntake({ SmartDashboard.getNumber("Shooter/DesiredShooterRPM", 0.0).RPM })
             )
+        driverController.rightTrigger().whileTrue(AutoShootCarrots())
 
         //        driverController.x().whileTrue(Shooter.routine.fullSysID())
 

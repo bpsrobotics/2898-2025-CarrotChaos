@@ -2,6 +2,7 @@ package frc.robot.commands.vision
 
 import beaverlib.utils.Sugar.clamp
 import beaverlib.utils.Units.Angular.degrees
+import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
@@ -14,7 +15,6 @@ import kotlin.math.sign
 
 // 3, 3.2
 class AlignOdometry(
-    val apriltagId: Int,
     var targetPose2d: Pose2d = Pose2d(3.1, 4.24, Rotation2d(0.0)),
     val maxSpeed: Double = 1.5,
     val maxRotSpeed: Double = 1.0,
@@ -31,7 +31,7 @@ class AlignOdometry(
     }
 
     override fun initialize() {
-        rotationPID.setpoint = targetPose2d.rotation.radians
+        rotationPID.setpoint = MathUtil.angleModulus(targetPose2d.rotation.radians)
         xPID.setpoint = targetPose2d.x
         yPID.setpoint = targetPose2d.y
     }
