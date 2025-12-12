@@ -16,10 +16,7 @@ import frc.robot.commands.DoShoot
 import frc.robot.commands.DoShootIntake
 import frc.robot.commands.OI.NavXReset
 import frc.robot.commands.OI.Rumble
-import frc.robot.commands.autos.AutoShootCarrots
-import kotlin.math.absoluteValue
 import kotlin.math.pow
-import kotlin.math.sign
 
 /**
  * The Operating Interface object. This is where you put joystick, button, or keyboard inputs.
@@ -75,7 +72,7 @@ object OI : SubsystemBase() {
                     SmartDashboard.getNumber("Subsystems/Shooter/DesiredShooterRPM", 3500.0).RPM
                 })
             )
-        driverController.rightTrigger().whileTrue(AutoShootCarrots())
+        // driverController.rightTrigger().whileTrue(AutoShootCarrots())
     }
 
     /**
@@ -99,12 +96,7 @@ object OI : SubsystemBase() {
         deadzone: Double = DEADZONE_THRESHOLD,
         power: Double = 1.0,
     ): Double {
-        var output = input
-
-        output = MathUtil.applyDeadband(output, DEADZONE_THRESHOLD)
-        if (power != 1.0) output = output.pow(power).absoluteValue * input.sign
-
-        return output
+        return MathUtil.applyDeadband(input, deadzone).pow(power)
     }
 
     // conflicts with the other definition, name it something else after compilation
@@ -124,6 +116,13 @@ object OI : SubsystemBase() {
     val translationX
         get() = driverController.leftX.process(power = INPUT_EXPONENT)
 
+    val translationVector
+        get() =
+            Vector2(driverController.leftX, driverController.leftY).unit *
+                Vector2(driverController.leftX, driverController.leftY)
+                    .magnitude
+                    .process(power = INPUT_EXPONENT)
+
     /**
      * Driver controller's throttle on the left joystick for the Y Axis, from -1 (down) to 1 (up)
      */
@@ -135,7 +134,7 @@ object OI : SubsystemBase() {
      * (right)
      */
     val turnX
-        get() = driverController.rightX.process(power = INPUT_EXPONENT)
+        get() = driverController.rightX.process(power = 1.0)
 
     /**
      * Driver controller's throttle on the right joystick for the Y Axis, from -1 (down) to 1 (up)

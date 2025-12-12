@@ -5,8 +5,6 @@ package frc.robot
 
 import edu.wpi.first.wpilibj.DriverStation
 import frc.robot.OI.rightTrigger
-import frc.robot.OI.translationX
-import frc.robot.OI.translationY
 import frc.robot.OI.turnX
 import frc.robot.commands.swerve.TeleopDriveCommand
 import frc.robot.engine.FieldMap
@@ -34,8 +32,8 @@ class RobotContainer {
 
     val teleopDrive: TeleopDriveCommand =
         TeleopDriveCommand(
-            { translationY * reverseDrive },
-            { translationX * reverseDrive },
+            { OI.translationVector.y * reverseDrive },
+            { OI.translationVector.x * reverseDrive },
             { -turnX },
             { true },
             { rightTrigger },

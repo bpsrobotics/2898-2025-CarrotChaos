@@ -72,15 +72,17 @@ class TeleopDriveCommand(
         //        )
         Drivetrain.driveFieldOriented(
             ChassisSpeeds(
-                forwardVelocity * Drivetrain.maximumSpeed + addSpeed.translation.x,
-                strafeVelocity * Drivetrain.maximumSpeed + addSpeed.translation.y,
+                (forwardVelocity * Drivetrain.maximumSpeed + addSpeed.translation.x),
+                (strafeVelocity * Drivetrain.maximumSpeed + addSpeed.translation.y),
                 angVelocity * Drivetrain.maxAngularSpeed,
             )
         )
     }
 
     /** @suppress */
-    override fun end(interrupted: Boolean) {}
+    override fun end(interrupted: Boolean) {
+        Drivetrain.stop()
+    }
 
     /** @suppress */
     override fun isFinished(): Boolean {

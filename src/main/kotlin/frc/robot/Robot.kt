@@ -3,7 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot
 
-import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
@@ -85,9 +84,6 @@ class Robot : TimedRobot() { // LoggedRobot() {
         // Instantiate our RobotContainer. This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         robotContainer = RobotContainer()
-        val camera = CameraServer.startAutomaticCapture()
-        camera.setFPS(30)
-        camera.setResolution(640, 480)
         // SmartDashboard.putBoolean("/Auto/UseMovementAuto", true)
         // SmartDashboard.putString("/AK/Mode", currentMode.toString())
     }
