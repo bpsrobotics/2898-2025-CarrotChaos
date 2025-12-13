@@ -14,6 +14,7 @@ import frc.robot.subsystems.Drivetrain
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
+
 // 3, 3.2
 class AlignOdometry(
     var targetPose2d: Pose2d = Pose2d(3.1, 4.24, Rotation2d(0.0)),
@@ -38,6 +39,7 @@ class AlignOdometry(
         rotationPID.setpoint = MathUtil.angleModulus(targetPose2d.rotation.radians)
         xPID.setpoint = targetPose2d.x
         yPID.setpoint = targetPose2d.y
+        Drivetrain.updateVisionOdometry = false
     }
 
     override fun execute() {
@@ -91,5 +93,6 @@ class AlignOdometry(
 
     override fun end(interrupted: Boolean) {
         Drivetrain.stop()
+        Drivetrain.updateVisionOdometry = true
     }
 }

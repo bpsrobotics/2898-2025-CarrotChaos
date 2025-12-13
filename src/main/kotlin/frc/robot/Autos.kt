@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import frc.robot.commands.DoShootIntake
 import frc.robot.commands.autos.AutoShootCarrots
+import frc.robot.commands.autos.AutoShootThenMovement
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Drivetrain.driveConsumer
 import frc.robot.subsystems.Drivetrain.getAlliance
@@ -68,7 +69,11 @@ object Autos {
     val autonomousCommand: Command
         get() = autoCommandChooser.selected
 
-    val autos = mapOf<String, Command>(Pair("AutoAlignShoot", AutoShootCarrots), Pair("JustShoot", DoShootIntake({3500.RPM}, shootTime = 2.seconds)))
+    val autos = mapOf<String, Command>(
+        Pair("AutoAlignShoot", AutoShootCarrots),
+        Pair("JustShoot", DoShootIntake({3500.RPM}, shootTime = 2.seconds)),
+        Pair("Auto Shoot Then Movement", AutoShootThenMovement)
+    )
 
     fun addAutos() {
         autoCommandChooser.setDefaultOption("No Auto", InstantCommand())

@@ -72,6 +72,9 @@ object Drivetrain : SubsystemBase() {
     var posePublisher: StructPublisher<Pose2d> =
         NetworkTableInstance.getDefault().getStructTopic("RobotPose", Pose2d.struct).publish()
 
+    var updateVisionOdometry = true
+
+
     init {
         // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects
         // being created.
@@ -99,6 +102,7 @@ object Drivetrain : SubsystemBase() {
         Vision.listeners.add(
             "UpdateOdometry",
             fun(result, camera) {
+                if(!updateVisionOdometry) return
                 if (result.targets.isEmpty()) return
                 if (
                     !result.multitagResult.isPresent && (result.targets.first().poseAmbiguity > 0.3)
