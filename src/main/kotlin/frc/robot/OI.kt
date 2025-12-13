@@ -57,20 +57,22 @@ object OI : SubsystemBase() {
         // stuck carrots
         highHatForward.whileTrue(DoOutakeFullRobot()) // Outtake
 
-        SmartDashboard.putNumber("Shooter/DesiredShooterRPM", 0.0)
+        SmartDashboard.putNumber("Shooter/DesiredShooterRPM", 3500.0)
 
         // If operator trigger is pressed, and not intaking, run the shoot command
         operatorTrigger
             .and(highHatBack.negate())
-            .whileTrue(DoShoot({ SmartDashboard.getNumber("Shooter/DesiredShooterRPM", 0.0).RPM }))
+            .whileTrue(
+                DoShoot({ SmartDashboard.getNumber("Shooter/DesiredShooterRPM", 3500.0).RPM })
+            )
 
         // If operator trigger is pressed, and ALSO intaking, run the shoot and intake command
         operatorTrigger
             .and(highHatBack)
             .whileTrue(
-                DoShootIntake({ SmartDashboard.getNumber("Shooter/DesiredShooterRPM", 0.0).RPM })
+                DoShootIntake({ SmartDashboard.getNumber("Shooter/DesiredShooterRPM", 3500.0).RPM })
             )
-        driverController.rightTrigger().whileTrue(AutoShootCarrots())
+        driverController.leftTrigger().whileTrue(AutoShootCarrots)
 
         //        driverController.x().whileTrue(Shooter.routine.fullSysID())
 

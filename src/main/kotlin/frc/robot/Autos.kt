@@ -65,7 +65,7 @@ object Autos {
     val autonomousCommand: Command
         get() = autoCommandChooser.selected
 
-    val autos = mapOf<String, Command>(Pair("AutoShoot", AutoShootCarrots()))
+    val autos = mapOf<String, Command>(Pair("AutoShoot", AutoShootCarrots))
 
     fun addAutos() {
         autoCommandChooser.setDefaultOption("No Auto", InstantCommand())
@@ -165,4 +165,21 @@ object Autos {
         path.preventFlipping = true
         return path
     }
+
+    fun pathFindToPose(
+        pose: Pose2d,
+        maxVelocity: VelocityUnit = 1.0.metersPerSecond,
+        maxAcceleration: Acceleration = 1.0.metersPerSecondSquared,
+        maxAngularVelocity: AngularVelocity = (2 * PI).radiansPerSecond,
+        maxAngularAcceleration: AngularAcceleration = (4 * PI).radiansPerSecondSquared,
+    ): Command =
+        AutoBuilder.pathfindToPose(
+            pose,
+            PathConstraints(
+                maxVelocity.asMetersPerSecond,
+                maxAcceleration.asMetersPerSecondSquared,
+                maxAngularVelocity.asRadiansPerSecond,
+                maxAngularAcceleration.asRadiansPerSecondSquared,
+            ),
+        ) // The constraints for this path.)
 }

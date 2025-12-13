@@ -3,11 +3,15 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot
 
+import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.networktables.NetworkTableInstance
+import edu.wpi.first.networktables.StructPublisher
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import frc.robot.commands.autos.AutoShootCarrotsStuff
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,6 +36,9 @@ class Robot : TimedRobot() {
         //        CameraServer.startAutomaticCapture()
     }
 
+    var desiredPosePublisher: StructPublisher<Pose2d> =
+        NetworkTableInstance.getDefault().getStructTopic("DesiredPose", Pose2d.struct).publish()
+
     /**
      * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
      * that you want ran during disabled, autonomous, teleoperated and test.
@@ -45,6 +52,7 @@ class Robot : TimedRobot() {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         commandScheduler.run()
+        desiredPosePublisher.set(AutoShootCarrotsStuff.targetPose)
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
