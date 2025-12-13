@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.Filesystem
 import frc.robot.beaverlib.odometry.BeaverVisionCamera
 import org.photonvision.PhotonPoseEstimator
 import java.io.File
-import kotlin.math.PI
 
 val customField: MutableList<AprilTag> = mutableListOf(AprilTag(1, Pose3d()))
 
@@ -28,7 +27,7 @@ val Vision =
                 -13.inches.asMeters,
                 9.5.inches.asMeters,
                 7.inches.asMeters,
-                Rotation3d(0.0, 30.0.degrees.asRadians, PI + 15.0.degrees.asRadians),
+                Rotation3d(0.0, 30.0.degrees.asRadians, 10.0.degrees.asRadians),
             ),
             //            Transform3d(0.18, -0.33, 0.2, Rotation3d()),
             layout =

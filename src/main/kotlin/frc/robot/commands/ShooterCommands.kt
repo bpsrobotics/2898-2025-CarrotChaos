@@ -5,6 +5,7 @@ import beaverlib.utils.Units.Time
 import beaverlib.utils.Units.seconds
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import frc.robot.subsystems.Gate
 import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter
@@ -49,7 +50,7 @@ fun DoShoot(
         ParallelRaceGroup(
             Shooter.shoot(shooterSpeed, time = shootTime),
             Tunnel.runAtPowerCommand(tunnelPower),
-            Gate.runAtPowerCommand(gatePower),
+            SequentialCommandGroup(Gate.runAtPowerCommand(gatePower, 0.5.seconds), WaitCommand(0.5)).repeatedly(),
         ),
     )
 
@@ -70,7 +71,7 @@ fun DoShootIntake(
             Shooter.shoot(shooterSpeed, time = shootTime),
             Intake.runAtPowerCommand(intakePower),
             Tunnel.runAtPowerCommand(tunnelPower),
-            Gate.runAtPowerCommand(gatePower),
+            SequentialCommandGroup(Gate.runAtPowerCommand(gatePower, 0.5.seconds), WaitCommand(0.5)).repeatedly(),
         ),
     )
 

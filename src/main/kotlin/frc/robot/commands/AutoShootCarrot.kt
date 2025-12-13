@@ -61,8 +61,7 @@ object AutoShootCarrotsStuff {
                         .center) // Get the closest pose that is proper distance from the
                 // feeder
                 .toPose2d(
-                    Drivetrain.pose.vector2.angleTo(FieldMap.teamFeederStation.center).asDegrees -
-                        180
+                    Drivetrain.pose.vector2.angleTo(FieldMap.teamFeederStation.center).asDegrees
                 )
 
     val desiredShooterSpeed = { 3500.RPM }
