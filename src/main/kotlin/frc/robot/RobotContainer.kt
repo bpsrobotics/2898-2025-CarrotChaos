@@ -49,6 +49,8 @@ class RobotContainer {
 
         Drivetrain.defaultCommand = teleopDrive
 
+        Autos.addAutos()
+
         configureBindings()
     }
 
