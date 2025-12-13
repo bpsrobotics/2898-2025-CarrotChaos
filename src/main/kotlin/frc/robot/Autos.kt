@@ -9,6 +9,7 @@ import beaverlib.utils.Units.Angular.radiansPerSecond
 import beaverlib.utils.Units.Angular.radiansPerSecondSquared
 import beaverlib.utils.Units.Linear.*
 import beaverlib.utils.Units.lb
+import beaverlib.utils.Units.seconds
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.config.ModuleConfig
 import com.pathplanner.lib.config.RobotConfig
@@ -67,7 +68,7 @@ object Autos {
     val autonomousCommand: Command
         get() = autoCommandChooser.selected
 
-    val autos = mapOf<String, Command>(Pair("AutoAlignShoot", AutoShootCarrots), Pair("JustShoot", DoShootIntake({3500.RPM})))
+    val autos = mapOf<String, Command>(Pair("AutoAlignShoot", AutoShootCarrots), Pair("JustShoot", DoShootIntake({3500.RPM}, shootTime = 2.seconds)))
 
     fun addAutos() {
         autoCommandChooser.setDefaultOption("No Auto", InstantCommand())
